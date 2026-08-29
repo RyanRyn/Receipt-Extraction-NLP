@@ -14,10 +14,14 @@ __pycache__/
 .ipynb_checkpoints/
 
 # --- generated data ----------------------------------------------------
-# The database is a binary file that changes on every run: it would produce a
-# new blob in every commit and conflict on every merge. Rebuild it instead:
+# data/dms.sqlite3 IS committed, deliberately. It is only ~1.6 MB and it holds
+# 40 processed receipts with their entities and vectors, so a teammate can
+# clone and search immediately instead of waiting 20 minutes for ingestion.
+#
+# The trade-off: it is a binary file, so each commit that touches it stores a
+# fresh copy and two people editing it will conflict. If that becomes a
+# nuisance, add it back here and rebuild instead:
 #   python run_dms.py process data/receipts --limit 40
-data/dms.sqlite3
 data/*.sqlite3-journal
 data/*.sqlite3-wal
 

@@ -8,6 +8,13 @@ highlight any hit back on the original document.
 Bahasa Melayu and English, entirely offline — **no API key, no token, no
 subscription**.
 
+> ### New to this project?
+> **Read [`SETUP.md`](SETUP.md) first.** It walks through installing Python,
+> creating a virtual environment and getting the app running, assuming no prior
+> Python experience. The commands below assume that is already done.
+
+---
+
 ## Quick start — the graphical interface
 
 ```bash
