@@ -1,0 +1,47 @@
+# --- virtual environment -----------------------------------------------
+# ~5 GB, and an environment built on one machine will not run on another.
+# SETUP.md explains how to create one.
+.venv/
+venv/
+env/
+
+# --- Python ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# --- generated data ----------------------------------------------------
+# The database is a binary file that changes on every run: it would produce a
+# new blob in every commit and conflict on every merge. Rebuild it instead:
+#   python run_dms.py process data/receipts --limit 40
+data/dms.sqlite3
+data/*.sqlite3-journal
+data/*.sqlite3-wal
+
+# OCR and language-model response caches; regenerated on demand.
+data/cache/
+
+# --- dataset images ----------------------------------------------------
+# Not committed, for two reasons. They are ~390 MB, and they belong to the
+# HuggingFace dataset rather than to this project - redistributing someone
+# else's corpus is a licensing question this repository does not need to
+# answer. Anyone can recreate them in one command:
+#   python run_dms.py export --split test --out data/receipts
+data/receipts/
+data/receipts_train/
+
+# --- build artefacts ---------------------------------------------------
+*.zip
+out.html
+dms_output/
+
+# --- editor / OS -------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store

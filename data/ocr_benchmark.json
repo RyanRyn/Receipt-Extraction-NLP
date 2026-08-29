@@ -1,0 +1,28 @@
+{
+  "source": "amohseni/receipt_VLM_information_extraction [test]",
+  "n": 20,
+  "engines": {
+    "EasyOCR (ms+en)": {
+      "found": {
+        "company": 19,
+        "date": 16,
+        "address": 17,
+        "total": 18
+      },
+      "mean_conf": 0.8043352396852119,
+      "seconds_per_receipt": 5.244900369644165,
+      "chars_per_receipt": 580.5
+    },
+    "Tesseract (msa+eng)": {
+      "found": {
+        "company": 20,
+        "date": 15,
+        "address": 20,
+        "total": 18
+      },
+      "mean_conf": 0.8646075635761676,
+      "seconds_per_receipt": 12.026185464859008,
+      "chars_per_receipt": 672.9
+    }
+  }
+}

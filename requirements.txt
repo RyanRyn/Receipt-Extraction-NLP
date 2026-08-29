@@ -1,0 +1,81 @@
+# Receipt DMS (dms/ package, run_dms.py, app.py, tools/) - dependencies
+# ---------------------------------------------------------------------------
+# Everything here is free and open source. No API key, no access token and no
+# paid subscription is used anywhere: the OCR model and the LLM are downloaded
+# once from HuggingFace and then run entirely on the local machine.
+#
+# Verified on Windows 11, Python 3.14.7, in the existing .venv.
+
+# --- OCR -------------------------------------------------------------------
+easyocr>=1.7.2            # Malay ('ms') + English ('en') text recognition
+opencv-python>=4.8        # preprocessing: Otsu, adaptive, CLAHE, deskew
+numpy>=1.26
+
+# --- NER / local LLM -------------------------------------------------------
+transformers>=4.40        # runs Qwen2.5-1.5B-Instruct locally
+tokenizers>=0.19
+safetensors>=0.4
+sentencepiece>=0.2
+
+# --- Semantic search -------------------------------------------------------
+sentence-transformers>=3.0   # multilingual sentence embeddings (BGE-M3)
+
+# --- Graphical interface ---------------------------------------------------
+streamlit>=1.40              # run with: streamlit run app.py
+
+# --- OCR alternative (optional) --------------------------------------------
+# pytesseract is only a wrapper; the Tesseract PROGRAM must be installed too
+# (Windows: the UB Mannheim build) with its `msa` and `eng` language packs.
+# Measured slightly better field recoverability than EasyOCR - see
+# tools/benchmark_ocr.py. Omit both and the default EasyOCR path is unaffected.
+pytesseract>=0.3.10
+
+# --- Dataset + evaluation --------------------------------------------------
+datasets>=2.18            # amohseni/receipt_VLM_information_extraction
+
+# --- Storage ---------------------------------------------------------------
+# sqlite3 (with FTS5) ships with Python; nothing to install.
+# Embedding vectors are stored as float32 blobs in the same database and
+# compared by brute-force cosine similarity - no vector database needed at
+# this scale (10k entities x 1024 dims is one 40 MB matrix multiply).
+
+
+# ---------------------------------------------------------------------------
+# PyTorch - install SEPARATELY, before the packages above
+# ---------------------------------------------------------------------------
+# A plain `pip install torch` gives a CPU-only build. It works, but the LLM
+# then decodes at about 3 tokens/second, i.e. 70-120 seconds per receipt.
+#
+# This machine has an NVIDIA RTX 4060 (8 GB, driver 610.88); the CUDA 12.6
+# build was installed with:
+#
+#   pip install --index-url https://download.pytorch.org/whl/cu126 ^
+#       --extra-index-url https://pypi.org/simple ^
+#       torch==2.13.0+cu126 torchvision==0.28.0+cu126
+#
+# Measured effect: 2.7 tok/s (CPU) -> 10-13 tok/s (GPU), and OCR also moves
+# onto the GPU automatically.
+#
+# Verify:
+#   python -c "import torch;print(torch.__version__, torch.cuda.is_available())"
+#   -> 2.13.0+cu126 True
+#
+# CPU-only fallback (machine with no NVIDIA GPU):
+#   pip install torch torchvision
+# The code detects the device at run time and works either way; add --no-llm
+# for an instant rule-only demonstration when running on CPU.
+
+
+# ---------------------------------------------------------------------------
+# Deliberately NOT used: malaya==5.1.1
+# ---------------------------------------------------------------------------
+# Malaya's model loader calls inspect.getargspec(), which was deprecated in
+# Python 3.0 and REMOVED in Python 3.11. On Python 3.14 every Malaya model
+# therefore fails before it reaches the network:
+#
+#   File "malaya/supervised/huggingface.py", line 22, in load
+#     args = inspect.getargspec(class_model)
+#   AttributeError: module 'inspect' has no attribute 'getargspec'
+#
+# Malaya 5.1.1 also pins transformers 4.x while this environment has 5.x.
+# See "Why not Malaya" in docs/ASSIGNMENT_REPORT.md for the full analysis.
