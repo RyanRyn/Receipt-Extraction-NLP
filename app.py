@@ -57,7 +57,25 @@ CSS_COLOURS = {
 
 @st.cache_resource(show_spinner="Loading OCR engine…")
 def get_ocr(engine: str):
-    return make_ocr(engine)
+    """Build the chosen OCR reader, degrading rather than crashing.
+
+    The selector defaults to Tesseract, which is a separate program rather than
+    a pip dependency. Passing the name explicitly bypasses the fallback in
+    make_ocr(), so a machine without it would raise here on first use and take
+    the whole page down - which is exactly the machine a new teammate is on.
+    """
+    try:
+        return make_ocr(engine)
+    except RuntimeError as exc:
+        if engine == "easyocr":
+            raise
+        st.warning(
+            f"**{engine} is not available on this machine, so EasyOCR is "
+            f"being used instead.** Accuracy will be below the figures on "
+            f"the *How it works* page, which assume Tesseract. SETUP.md "
+            f"step 7 installs it.")
+        st.caption(f"Reason: {exc}")
+        return make_ocr("easyocr")
 
 
 @st.cache_resource(show_spinner="Loading the language model…")

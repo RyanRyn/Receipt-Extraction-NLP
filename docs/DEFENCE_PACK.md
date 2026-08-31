@@ -74,7 +74,8 @@ They actually *read* the receipt and understand it as a document.
   `22.60` because it understands it's a price.
 - **Bad at:** digits. Drops leading words (`RIANG` instead of `PERNIAGAAN RIANG`)
   and occasionally invents a plausible-looking number.
-- **Speed:** ~12 seconds.
+- **Speed:** 12–26 seconds, depending on how many line items the receipt
+  has — it writes one JSON entry per item, so a long receipt costs more.
 
 ### The hybrid is asking both, then checking
 
@@ -144,6 +145,17 @@ Run `sample_receipt.jpg` — a timber shop, *Kedai Papan Yew Chuan*. OCR damages
 lines it shows the two layers, a disagreement, the routing table deciding it,
 two independent arithmetic checks overruling the result, and the system
 explaining every correction instead of applying it silently.
+
+**Verified through the interface**, where Stage 4 additionally prints:
+
+> *This receipt states its prices already include tax, so the subtotal + tax =
+> total check is deliberately suppressed.*
+
+Point at that line. It shows the system distinguishing between a check that
+becomes invalid on a tax-inclusive receipt (the arithmetic identity, correctly
+switched off) and one that stays valid (the magnitude bound, still firing on the
+line below). Telling those apart was the bug fixed during preparation — see
+limitation 1.
 
 **If asked "what if both layers are wrong?"** — that is repair 1. Both said
 4.80. The receipt's own arithmetic still caught it, because `paid − change` is
@@ -510,11 +522,13 @@ fallback the assignment asks for"*.
 - Database is **already loaded with 40 receipts** — search never depends on the
   live run.
 - Have the receipt file **already open in the file picker** before you start.
-- It takes **~40 seconds** with Tesseract (about 13s reading the image, then
-  ~27s in the language model). **Talk through the stages while it runs** — don't
-  stand in silence. That is exactly the window for explaining how the
-  preprocessing variant is chosen, and it is long enough that silence would be
-  uncomfortable.
+- It takes **~35 seconds** with Tesseract — measured through the interface on
+  the presentation machine: 7.9s reading the image, 26.0s in the language model.
+  **Talk through the stages while it runs** — don't stand in silence. That is
+  exactly the window for explaining how the preprocessing variant is chosen, and
+  it is long enough that silence would be uncomfortable.
+- The interface shows each stage as it completes, so there is always something
+  on screen to point at while you talk.
 - Pick the receipt on Friday and run it three times on the presentation machine.
 
 ---
