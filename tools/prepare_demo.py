@@ -120,7 +120,11 @@ def main(argv=None) -> int:
     from dms.config import default_receipt
     from dms.ocr import make_ocr
     t0 = time.time()
-    reader = make_ocr("easyocr")
+    # Deliberately the configured default, not a hardcoded engine: this is
+    # the pre-flight check, so it must exercise the reader the demo will
+    # actually use. Pinning it to EasyOCR would let this report READY while
+    # the real pipeline was broken.
+    reader = make_ocr()
     sample = default_receipt()
     if sample is not None and sample.exists():
         ocr = reader.read(sample, variant="gray_otsu")

@@ -56,7 +56,7 @@ def main(argv=None) -> int:
 
     # ---------------------------------------------------------------- A
     rule("A. OCR — the text the model will be shown")
-    ocr = make_ocr("easyocr").read(image)
+    ocr = make_ocr().read(image)
     print(ocr.text)
 
     # ---------------------------------------------------------------- B

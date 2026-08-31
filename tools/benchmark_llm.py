@@ -27,7 +27,7 @@ import time
 import traceback
 from pathlib import Path
 
-from dms.config import LLM_MODELS, describe_runtime, resolve_model
+from dms.config import OCR_ENGINE, LLM_MODELS, describe_runtime, resolve_model
 from dms.llm import LocalLLMExtractor
 from dms.ner import HybridNER
 from dms.ocr import make_ocr
@@ -51,7 +51,7 @@ def main(argv=None) -> int:
     ap.add_argument("--labels", default=None)
     ap.add_argument("--limit", type=int, default=30)
     ap.add_argument("--models", default=DEFAULT_MODELS)
-    ap.add_argument("--ocr-engine", default="easyocr")
+    ap.add_argument("--ocr-engine", default=OCR_ENGINE)
     ap.add_argument("--ocr-variant", default="auto")
     ap.add_argument("--report", default="data/llm_benchmark.json")
     args = ap.parse_args(argv)
