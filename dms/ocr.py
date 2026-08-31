@@ -27,6 +27,7 @@ from dms.config import (
     OCR_LANGS,
     OCR_LINE_TOLERANCE,
     OCR_MIN_CONF,
+    OCR_ENGINE,
 )
 from dms.schema import OcrResult
 
@@ -240,6 +241,10 @@ def bounding_box(polygons: list[list]) -> list[int] | None:
 class ReceiptOCR:
     """Lazily-initialised EasyOCR reader configured for Malay + English."""
 
+    #: Backend identifier, recorded on every document so a stored result
+    #: always says which reader produced it.
+    name = "easyocr"
+
     _reader = None       # class-level: the model is expensive, load it once
 
     def __init__(self, langs: list[str] | None = None, gpu: bool | None = None):
@@ -383,6 +388,10 @@ class TesseractOCR:
     Tesseract output can still be highlighted on the image.
     """
 
+    #: Backend identifier, recorded on every document so a stored result
+    #: always says which reader produced it.
+    name = "tesseract"
+
     # psm 6 = one uniform block of text, psm 4 = a single column of varying
     # sizes. Both suit a receipt; whichever reads better is kept.
     CONFIGS = ["--oem 3 --psm 6", "--oem 3 --psm 4"]
@@ -485,10 +494,31 @@ class TesseractOCR:
 OCR_ENGINES = {"easyocr": ReceiptOCR, "tesseract": TesseractOCR}
 
 
-def make_ocr(engine: str = "easyocr", **kwargs):
-    """Build an OCR backend by name (``easyocr`` or ``tesseract``)."""
+def make_ocr(engine: str | None = None, **kwargs):
+    """Build an OCR backend by name (``easyocr`` or ``tesseract``).
+
+    ``engine=None`` selects the project default, :data:`dms.config.OCR_ENGINE`.
+
+    That default is Tesseract, which is a separate program rather than a pip
+    dependency, so a machine without it would otherwise fail on import of the
+    whole pipeline. When the *default* cannot be constructed the call falls back
+    to EasyOCR and says so, keeping a fresh clone runnable.
+
+    An engine named explicitly is never substituted: a caller who asked for
+    Tesseract needs to know it is missing rather than silently receive numbers
+    from a different reader.
+    """
+    explicit = engine is not None
+    engine = engine or OCR_ENGINE
     if engine not in OCR_ENGINES:
         raise ValueError(
             f"unknown OCR engine {engine!r}; choose from {sorted(OCR_ENGINES)}"
         )
-    return OCR_ENGINES[engine](**kwargs)
+    try:
+        return OCR_ENGINES[engine](**kwargs)
+    except RuntimeError:
+        if explicit or engine == "easyocr":
+            raise
+        print(f"  ! {engine} is unavailable; falling back to EasyOCR. "
+              "Accuracy will be lower than the reported figures - see SETUP.md.")
+        return OCR_ENGINES["easyocr"](**kwargs)

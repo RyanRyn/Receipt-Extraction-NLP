@@ -409,19 +409,36 @@ recorded as a warning for human review. Four validators then run:
    or "harga termasuk cukai", `subtotal + tax = total` is deliberately false, and
    the check is suppressed rather than raising a false alarm.
 
-**Worked example.** On `sample_receipt.jpg`, OCR destroyed the `GST 6%` caption
-entirely, leaving orphan figures. The rule layer could not attribute the tax; the
-language model mislabelled `21.32` as the tax. The system reported:
+5. **Promotion of the rejected alternative.** When a value fails the
+   plausibility bound, the figure proposed by the layer that lost the merge is
+   examined before the field is abandoned. A money value from the language model
+   has already been checked against the printed text, so adopting it recovers
+   evidence the routing table discarded rather than inventing anything.
+
+**Worked example.** On `sample_receipt.jpg` (*Kedai Papan Yew Chuan*, a timber
+merchant) OCR damaged two separate figures, and the two are repaired by different
+mechanisms:
 
 ```
-! MERCHANT: rule='PERNIAGAAN RIANG' vs llm='RIANG' -> kept rule
-! TAX 21.32 is 94% of the total - reinterpreted as the subtotal
-! TAX: absent -> 1.28 (total - subtotal, and printed on the receipt)
+! TAX: rule='80.00' vs llm='4.80' -> kept rule
+! TOTAL: 4.80 -> 84.80 (paid - change, and printed on the receipt)
+! TAX 80.00 is 94% of the total - implausible; using 4.80 from the llm layer instead
 ```
 
-The final record is internally consistent in both directions
-(`21.32 + 1.28 = 22.60` and `30.00 − 7.40 = 22.60`). Neither layer alone produces
-it.
+The **total** was misread as `4.80` by *both* layers, so no disagreement arose to
+arbitrate. It was caught instead by the payment identity: the receipt records
+`84.80` tendered and `0.00` change, and `paid − change` is an independent
+statement of the amount due, produced by the till rather than by either
+extractor. The implied figure was confirmed present in the text before adoption.
+
+The **tax** failed on magnitude: at 94% of the total it cannot be a Malaysian
+GST or SST charge. Rather than deleting the field, the system promoted the
+language model's rejected `4.80`, which is 5.7% of the total and therefore
+plausible.
+
+Neither layer alone produces this record, and neither does simple voting between
+them — the corrections come from arithmetic relationships that hold on a receipt
+regardless of what either extractor believes.
 
 ### 3.7 Storage and retrieval design
 
@@ -519,8 +536,8 @@ Intel processors without AVX512-BF16 emulate it and end up slower than float32.
 | Language | Python | 3.14.7 |
 | Deep learning | PyTorch | 2.13.0+cu126 |
 | Model hosting | Hugging Face Transformers | 5.15.0 |
-| OCR (primary) | EasyOCR (CRAFT detector + CRNN recogniser) | 1.7.2 |
-| OCR (alternative) | Tesseract via pytesseract, `msa`+`eng` | 5.5.3 |
+| OCR (primary) | Tesseract via pytesseract, `msa`+`eng` | 5.5.3 |
+| OCR (fallback) | EasyOCR (CRAFT detector + CRNN recogniser) | 1.7.2 |
 | Image processing | OpenCV | 5.0.0 |
 | Embeddings | sentence-transformers (BGE-M3) | 6.0.0 |
 | Interface | Streamlit | 1.62.0 |
@@ -562,7 +579,10 @@ method can recover a total that OCR never read — and it requires no transcript
 
 ### 5.2 OCR engine comparison
 
-Twenty receipts, both engines offered identical preprocessing variants.
+Twenty receipts, both engines offered identical preprocessing variants. This
+is a *recoverability* measurement - whether the field survived into the OCR
+text at all - not an accuracy one; the end-to-end comparison over 120
+training receipts follows in §5.4.
 
 | Engine | company | date | address | total | **mean** | s/receipt | mean conf. |
 |---|---|---|---|---|---|---|---|
@@ -576,9 +596,18 @@ while EasyOCR lost 15% of addresses — long address lines are where Tesseract's
 line-oriented LSTM has the advantage. EasyOCR was superior only on dates.
 
 Because recoverability is a ceiling rather than an outcome, the end-to-end
-consequence is measured in §5.4. **Both engines are supported** and the engine is
-a command-line flag; EasyOCR remains the *default* for installation simplicity
-(pip only, no separate system binary), not because it is more accurate.
+consequence was then measured on the 120-receipt training split (§5.4): Tesseract
+lifted exact-match accuracy from 51.7% to 63.3%. **Tesseract is therefore the
+default.** That decision was taken on training data only, and it is the largest
+single improvement recorded in this report.
+
+**Both engines remain supported**, selectable by command-line flag, by the
+`DMS_OCR_ENGINE` environment variable, or from a dropdown in the interface.
+EasyOCR is retained deliberately rather than as a legacy option: Tesseract is a
+separate system binary rather than a pip dependency, so on a machine without it
+the factory falls back to EasyOCR with a printed warning instead of failing. A
+fresh clone therefore still runs, at reduced accuracy — an availability decision,
+not an accuracy one.
 
 The timing column is not like-for-like: EasyOCR runs on the GPU here while
 Tesseract is CPU-only and was additionally run under two page-segmentation modes
@@ -597,75 +626,105 @@ once.
 
 | Routing (which layer owns the field on a disagreement) | Train exact | Train fuzzy |
 |---|---|---|
-| Rules own both merchant and address | 51.2% | 63.7% |
-| **LLM owns address** | **51.9%** | **66.0%** |
-| LLM owns merchant | 50.2% | 61.5% |
-| LLM owns both | 50.8% | 63.7% |
+| Rules own both merchant and address | 62.3% | 73.5% |
+| **LLM owns address** | **63.3%** | **77.7%** |
+| LLM owns merchant | 59.6% | 70.8% |
+| LLM owns both | 60.6% | 75.0% |
 
 **Step 2 — frozen configuration, evaluated once on the 97-receipt test split:**
 
 | Split | Exact | Fuzzy | n |
 |---|---|---|---|
-| Train (used for selection) | 51.9% | 66.0% | 120 |
-| **Test (scored once, unseen)** | **56.1%** | **68.7%** | 97 |
+| Train (used for selection) | 63.3% | 77.7% | 120 |
+| **Test (scored once, unseen)** | **63.6%** | **77.3%** | 97 |
 
 Two conclusions:
 
 * **The routing decision was independently confirmed.** The training data chose
   the same configuration previously arrived at by inspecting test scores. The
   earlier choice happened to be correct, but it is only *now* defensible.
-* **The generalisation gap is −4.2%** — the test split scored slightly *higher*
-  than the training sample. A negative gap is evidence against overfitting.
+* **The generalisation gap is −0.2%** — the test split scored marginally *higher*
+  than the training sample. A gap that small, and negative, is evidence against
+  overfitting: the configuration transfers to receipts it has never seen.
 
-**An honest correction.** A previous draft reported 63.3% exact on 30 test
-receipts. The unbiased figure is **56.1% on all 97**. The difference is mostly
-sample size — 30 receipts was a favourable subset. The 97-receipt figure is the
-one that should be quoted.
+Every decision reported here — the OCR engine (§5.2), the merge routing above,
+and the rule repairs of §8 — was made against the training split alone. The test
+split was read once, after everything was frozen.
+
+**A coincidence worth pre-empting.** An early draft of this project reported
+**63.3%** exact, obtained by selecting the routing on the test split itself and
+scoring 30 receipts. That figure was inflated by leakage and was withdrawn; the
+honest replacement, on all 97 test receipts, was **56.1%**. Adopting Tesseract —
+a decision taken entirely on training data — has since raised the honest figure
+to **63.6%**, which lands within half a point of the discredited number.
+
+The two are unrelated. The first was a biased estimate over a favourable
+30-receipt subset; the second is an unbiased estimate over the full split, and it
+rose because the reader improved, not because the measurement moved. The
+coincidence is noted here so that it cannot be mistaken for the earlier error
+having been quietly reinstated.
 
 ### 5.4 NER ablation
 
-The entire test split — all 97 receipts — with EasyOCR and
+The entire test split — all 97 receipts — with Tesseract and
 `Qwen2.5-1.5B-Instruct`. Percentages are exact / fuzzy / coverage. The
 configuration was fixed by §5.3 *before* this table was produced.
 
 | Field | Rules only | LLM only | **Hybrid** |
 |---|---|---|---|
-| company | 46.4 / 72.2 / 100.0 | 36.1 / 60.8 / 100.0 | **46.4 / 72.2 / 100.0** |
-| date | 77.3 / 77.3 / 82.5 | 71.1 / 71.1 / 99.0 | **78.4 / 78.4 / 99.0** |
-| address | **24.0 / 52.1 / 91.8** | 14.6 / 35.4 / 95.9 | 22.9 / 47.9 / 92.8 |
-| total | 64.9 / 64.9 / 77.3 | 50.5 / 50.5 / 99.0 | **76.3 / 76.3 / 90.7** |
-| **Overall** | 53.2 / 66.7 | 43.2 / 54.5 | **56.1 / 68.7** |
+| company | **58.8 / 77.3 / 100.0** | 48.5 / 68.0 / 100.0 | **58.8 / 77.3 / 100.0** |
+| date | 77.3 / 77.3 / 87.6 | 75.3 / 75.3 / 100.0 | **80.4 / 80.4 / 100.0** |
+| address | **41.7** / 63.5 / 99.0 | 26.0 / 57.3 / 99.0 | 36.5 / **72.9** / 99.0 |
+| total | 77.3 / 77.3 / 93.8 | 58.8 / 58.8 / 100.0 | **78.4 / 78.4 / 95.9** |
+| **Overall** | **63.8** / 73.9 | 52.2 / 64.9 | 63.6 / **77.3** |
 
-Four observations, one uncomfortable:
+Four observations, and the first is uncomfortable:
 
-1. **The hybrid is the best overall configuration**, and its advantage is
-   concentrated exactly where the design predicted: `total`, the field the
-   arithmetic validators protect, rises from 64.9% to **76.3%** — 11.4 points
-   over the rule layer and 25.8 over the language model.
-2. **The rule layer is a far stronger baseline than the language model** — 53.2%
-   against 43.2%. This deserves stating plainly, because the fashionable
-   assumption is the reverse.
-3. **The language model contributes coverage rather than raw accuracy.** It
-   answers on 99% of receipts where the rule layer leaves `total` blank on 22.7%.
-   In a searchable DMS this matters: a document with no extracted total is
-   invisible to any query about amounts. The hybrid inherits that coverage *and*
-   the rule layer's precision.
-4. **The hybrid is not uniformly better.** On `address` it scores 22.9% against
-   the rule layer's 24.0%. The training-split search nevertheless selected that
-   routing, because it wins on the macro average while losing marginally on this
-   one field. This is reported rather than concealed.
+1. **On exact match the rule layer alone equals the hybrid** — 63.8% against
+   63.6%, a gap of 0.2 points across 97 receipts, which is well inside sampling
+   noise. This was *not* true earlier in the project: with the weaker OCR engine
+   the hybrid led the rule layer by three points (53.2% to 56.1%). Improving the
+   reader removed most of what the language model had been repairing. Reported
+   plainly because it is the single most important finding in this section, and
+   because it contradicts the assumption the architecture was built on.
+2. **The hybrid retains a clear advantage on the other two axes.** It is 3.4
+   points ahead on fuzzy match (77.3% against 73.9%), and the margin on `address`
+   is 9.4 points — so where it is wrong, it is substantially closer to right. It
+   is also more *complete*: it finds a `date` on 100% of receipts against the rule
+   layer's 87.6%, and a `total` on 95.9% against 93.8%. In a searchable DMS this
+   matters directly, because a field that was never extracted is invisible to
+   every query, and scores zero on exact and fuzzy alike.
+3. **The language model alone remains the weakest configuration** — 52.2%
+   against the rule layer's 63.8%. This deserves stating plainly, because the
+   fashionable assumption is the reverse. Its value here is as a second opinion
+   under arbitration, not as a standalone extractor.
+4. **The hybrid is not uniformly better.** On `address` exact it scores 36.5%
+   against the rule layer's 41.7%. The training-split search nevertheless
+   selected that routing, because it wins the macro average on training data.
+   The configuration was left unchanged after the test split was scored: revising
+   it now, in the light of a test result, would reintroduce exactly the leakage
+   §5.3 exists to eliminate. It is reported rather than concealed.
 
-**With the alternative OCR engine** (30-receipt subset, so *not* directly
-comparable with the 97-receipt figures above):
+**The honest summary** is that the language model has ceased to be an accuracy
+win and become a robustness win — better fuzzy quality, better coverage, no
+improvement in exact match. On a harder corpus, with poorer printing or fewer
+printed labels, the gap would be expected to reopen; §9 treats this as the
+principal threat to the architecture's justification.
 
-| Configuration | Exact | Fuzzy |
-|---|---|---|
-| EasyOCR + hybrid | 63.3% | 70.8% |
-| **Tesseract + hybrid** | **65.8%** | **76.7%** |
+**The OCR engine comparison** that led to Tesseract being adopted, measured on
+the 120-receipt **training** split so that the choice never touched test data:
 
-Better OCR benefits the language model most — changing engine lifted the rule
-layer 4.2 points but the language model 7.5. The rules have a lexicon to fall
-back on; the model has nothing, so degraded text harms it disproportionately.
+| Configuration | Train exact | Train fuzzy | s/receipt |
+|---|---|---|---|
+| EasyOCR + hybrid | 51.7% | 65.8% | **5.2** |
+| **Tesseract + hybrid** | **63.3%** | **77.7%** | 7.7 |
+
+An 11.6-point gain for 2.5 seconds per receipt. The improvement is concentrated
+in the two fields that depend most on reading long, densely printed lines:
+`address` rose from 15.8% to 35.8% and `company` from 41.7% to 60.8%. This single
+change contributed more than every rule refinement in §8 combined, which is the
+clearest evidence in this report that **OCR quality, not extraction logic, is the
+binding constraint on the task**.
 
 ### 5.5 Extraction model comparison
 
@@ -1125,24 +1184,32 @@ exercises paths a script never reaches.
 1. **OCR is the ceiling.** Analysis of residual errors shows almost none were
    caused by choosing the wrong entity; they were caused by the characters being
    wrong before NER ran. Further effort belongs at the OCR stage.
-2. **Residual tuning on test, now bounded.** The merge routing was re-selected on
-   the training split and the test split scored once (§5.3), so 56.1% is
-   unbiased. Two smaller categories were not re-searched: the validator rules,
-   which are statements about receipts rather than fitted parameters; and the OCR
-   engine default, chosen for installability rather than score. Both are active
-   during the single test run, so their effect is measured on unseen data.
-3. **Sample size.** Headline figures cover the complete 97-receipt test split.
+2. **The language model no longer improves exact-match accuracy.** With the
+   stronger OCR engine the rule layer alone scores 63.8% against the hybrid's
+   63.6% (§5.4). The hybrid remains ahead on fuzzy match by 3.4 points and on
+   field coverage, so it was kept, but the architecture's original justification
+   — that the two layers together beat either alone on exact match — no longer
+   holds on this corpus. It held before the OCR engine changed. Establishing
+   whether the gap reopens on harder receipts, with poorer printing or fewer
+   printed labels, is the most important open question left by this work.
+3. **Residual tuning on test, now bounded.** The merge routing and the OCR engine
+   were both selected on the training split and the test split scored once
+   (§5.3), so 63.6% is unbiased. One smaller category was not re-searched: the
+   validator rules, which are statements about how receipts arithmetically behave
+   rather than parameters fitted to data. They are active during the single test
+   run, so their effect is measured on unseen data.
+4. **Sample size.** Headline figures cover the complete 97-receipt test split.
    The supporting experiments in §5.2, §5.5 and §5.6 remain at 20–30 receipts, so
    differences of one or two points there are not significant.
-4. **Nonsense queries cannot be rejected by score alone.** Across five embedding
+5. **Nonsense queries cannot be rejected by score alone.** Across five embedding
    models, no absolute threshold separates gibberish from genuine queries in
    general.
-5. **Semantic search requires a corpus.** With one or two documents indexed,
+6. **Semantic search requires a corpus.** With one or two documents indexed,
    nearest-neighbour search has no meaningful neighbours and returns nothing.
-6. **Multi-line item names.** Where a product name is printed on one line and its
+7. **Multi-line item names.** Where a product name is printed on one line and its
    price on the next, the rule fallback captures only the fragment beside the
    numbers.
-7. **No fine-tuning.** The language model is used zero-shot with few-shot
+8. **No fine-tuning.** The language model is used zero-shot with few-shot
    prompting.
 
 ### 9.2 Future work

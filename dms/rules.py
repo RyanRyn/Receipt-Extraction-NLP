@@ -60,7 +60,10 @@ _SPECIFIC_TOTAL = {
 _QTY_LINE = re.compile(r"\b(barang|items?|qty|kuantiti|unit|pcs|keping|helai)\b", re.I)
 # A company registration number printed after the trading name, e.g.
 # "KMF FOODICIOUS SDN BHD (1132106-H)" - not part of the merchant's name.
-_REG_SUFFIX = re.compile(r"\s*[\(\[]\s*\d{4,}\s*[-\s]?\s*[A-Za-z]?\s*[\)\]]?\s*$")
+_REG_SUFFIX = re.compile(
+    # The closing bracket is frequently misread - "}" for ")" is the
+    # common one - so every plausible variant is accepted.
+    r"\s*[\(\[\{]\s*\d{4,}\s*[-\s]?\s*[A-Za-z]?\s*[\)\]\}]?\s*$")
 # The same number printed *before* the address, because line reconstruction put
 # the registration and the street on one visual line:
 #   "Co REG No 210038-K, 42-46, JLN SULTAN AZLAN SHAH"  ->  "42-46, JLN ..."
@@ -68,6 +71,28 @@ _REG_PREFIX = re.compile(
     r"^\s*(?:co\.?\s*reg\.?\s*(?:no\.?)?\s*|reg\.?\s*no\.?\s*)?"
     r"[\(\[]?\d{5,}\s*-\s*[A-Za-z][\)\]]?\s*[,.]?\s*", re.I)
 _POSTCODE = re.compile(r"\b\d{5}\b")
+
+# A merchant line that *opens* with a corporate suffix is the tail of a name
+# split across two printed lines - "POPULAR BOOK" / "CO. (M) SDN BHD".
+_SUFFIX_START = re.compile(r"^\s*[\(\[]?\s*(?:co|sdn|bhd|berhad|s/b|m)\b", re.I)
+
+
+def _looks_like_brand_line(text: str) -> bool:
+    """Could this line be the first half of a merchant name?
+
+    Requires real words and rejects anything that reads as an address or a
+    document heading, so the backward join cannot drag a street into the name.
+    """
+    stripped = text.strip()
+    low = stripped.lower()
+    if len(stripped) < 3 or _is_noise(low) or _POSTCODE.search(stripped):
+        return False
+    letters = sum(ch.isalpha() for ch in stripped)
+    digits = sum(ch.isdigit() for ch in stripped)
+    if letters < 3 or digits > letters:
+        return False
+    return not _contains_any(low, ADDRESS_MARKERS)
+
 _PHONE_GENERIC = re.compile(r"\b(?:\+?60|0)\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4}\b")
 _TIME_STRICT = re.compile(r"\b([01]?\d|2[0-3])\s?[:;]\s?([0-5]\d)")
 # An identifier must contain at least one digit, otherwise the line
@@ -227,12 +252,32 @@ def _extract_merchant(lines: list[tuple[str, int]]) -> Entity | None:
     end = start + len(text)
 
     # "KEDAI RUNCIT MAKMUR" / "SDN BHD" split across two printed lines.
+    joined_forward = False
     if idx + 1 < len(lines):
         nline, noff = lines[idx + 1]
         nstr = nline.strip()
         if 0 < len(nstr) <= 18 and _contains_any(nstr.lower(), COMPANY_MARKERS):
             text = f"{text} {nstr}"
             end = noff + nline.index(nstr) + len(nstr)
+            joined_forward = True
+
+    # The mirror case, which was being lost: when the corporate suffix is the
+    # part carrying the marker, the search above stops on the *second* line of
+    # the name and the brand above it is discarded, giving "CO. (M) SDN BHD"
+    # instead of "POPULAR BOOK CO. (M) SDN BHD".
+    if not joined_forward and idx > 0 and _SUFFIX_START.match(text):
+        pline, poff = lines[idx - 1]
+        pstr = pline.strip()
+        # The trigger is deliberately narrow: the matched line must *open* with
+        # a corporate suffix, so it cannot stand as a name by itself. A broader
+        # rule - join whenever the line above looks like a brand - was measured
+        # on the training split and lost 6.7 points of company accuracy, because
+        # it swallowed slogans and product names printed above the real name.
+        if (_looks_like_brand_line(pstr)
+                and not _contains_any(pstr.lower(), COMPANY_MARKERS)
+                and len(pstr) + len(text) <= 60):
+            start = poff + pline.index(pstr)
+            text = f"{pstr} {text}"
 
     cleaned = _REG_SUFFIX.sub("", normalize_spaces(text)).strip(" ,.-")
     return _mk("MERCHANT", cleaned or normalize_spaces(text), text,

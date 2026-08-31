@@ -173,7 +173,11 @@ MALAYSIAN_PLACES = [
 NOISE_LINES = [
     "tax invoice", "invois cukai", "resit jualan", "sales receipt",
     "simplified tax invoice", "cash bill", "bil tunai", "official receipt",
-    "terima kasih", "thank you", "thanks", "sila datang lagi",
+    "terima kasih", "terima kaseh", "thank you", "thank u", "thanks",
+    # "TQ" is near-universal Malaysian shorthand for "thank you" and appears in
+    # receipt footers ("TQ FOR SHOPPING WITH ..."), which were being mistaken
+    # for the merchant name when the real name carried no company marker.
+    "tq for", "tq!", "sila datang lagi",
     "please come again", "barang yang dijual", "goods sold",
     "tidak boleh dipulangkan", "not refundable", "no refund",
     "selamat datang", "welcome", "customer copy", "salinan pelanggan",

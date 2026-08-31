@@ -37,7 +37,7 @@ import json
 import time
 from pathlib import Path
 
-from dms.config import CACHE_DIR, describe_runtime
+from dms.config import OCR_ENGINE, CACHE_DIR, describe_runtime
 from dms.ner import HybridNER
 from dms.ocr import make_ocr
 from dms.textutils import (
@@ -271,7 +271,7 @@ def main(argv=None) -> int:
                     choices=[*CONFIGS, "all"])
     ap.add_argument("--model", default=None)
     ap.add_argument("--ocr-variant", default="auto")
-    ap.add_argument("--ocr-engine", default="easyocr",
+    ap.add_argument("--ocr-engine", default=OCR_ENGINE,
                     choices=["easyocr", "tesseract"])
     ap.add_argument("--report", default=None, help="write per-receipt results as JSON")
     args = ap.parse_args(argv)

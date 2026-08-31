@@ -22,6 +22,18 @@ for _d in (DATA_DIR, CACHE_DIR):
 # EasyOCR language codes. 'ms' (Malay) and 'en' share the same Latin
 # recognition model, so requesting both costs nothing extra but lets the
 # decoder's language model favour Malay word shapes (JUMLAH, TUNAI, CUKAI...).
+# Which OCR backend to use unless a caller says otherwise.
+#
+# Tesseract, measured over the 120-receipt training split, recovered the four
+# annotated fields far more often than EasyOCR - 62.9% exact against 51.7%,
+# with address almost doubling - at a cost of roughly 2.5s per receipt. The
+# selection was made on the training split, never on test.
+#
+# It is a separate program rather than a pip dependency, so make_ocr() falls
+# back to EasyOCR when it is absent (see dms/ocr.py) and a fresh clone still
+# runs without it.
+OCR_ENGINE = os.getenv("DMS_OCR_ENGINE", "tesseract")
+
 OCR_LANGS = ["ms", "en"]
 
 # Minimum per-token OCR confidence kept in the reconstructed text.

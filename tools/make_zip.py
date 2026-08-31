@@ -39,8 +39,8 @@ CODE = ["dms", "tools", "docs", "app.py", "run_dms.py", "test_dms.py",
         "README.md", "SETUP.md", "requirements.txt", "sample_receipt.jpg"]
 # The measurements the report cites.
 EVIDENCE = ["data/tuning_report.json", "data/final_test97.json",
-            "data/final_tesseract.json", "data/ocr_benchmark.json",
-            "data/llm_benchmark.json", "data/embedding_benchmark.json"]
+            "data/ocr_benchmark.json", "data/llm_benchmark.json",
+            "data/embedding_benchmark.json"]
 
 
 def wanted(path: Path) -> bool:

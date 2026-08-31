@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
+from dms.config import OCR_ENGINE
 from dms.database import ReceiptDB
 from dms.ner import HybridNER
 from dms.ocr import bounding_box, make_ocr, polygons_for_span
@@ -26,10 +27,12 @@ class Pipeline:
                  model: str | None = None, ocr_variant: str = "auto",
                  ner_mode: str = "full", db_path: str | None = None,
                  store: bool = True, verbose: bool = True,
-                 ocr_engine: str = "easyocr", embed: bool = True,
+                 ocr_engine: str | None = None, embed: bool = True,
                  embed_model: str | None = None):
         self.ocr = make_ocr(ocr_engine)
-        self.ocr_engine = ocr_engine
+        # Record what was actually built, which may differ from what was
+        # asked for if the default engine was unavailable.
+        self.ocr_engine = getattr(self.ocr, "name", ocr_engine or OCR_ENGINE)
         self.ner = HybridNER(use_rules=use_rules, use_llm=use_llm,
                              model=model, mode=ner_mode, verbose=verbose)
         self.ocr_variant = ocr_variant

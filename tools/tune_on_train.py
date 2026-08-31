@@ -44,7 +44,7 @@ import time
 from itertools import product
 from pathlib import Path
 
-from dms.config import describe_runtime
+from dms.config import OCR_ENGINE, describe_runtime
 from dms.ner import HybridNER
 from dms.ocr import make_ocr
 
@@ -96,7 +96,7 @@ def main(argv=None) -> int:
     ap.add_argument("--train-limit", type=int, default=120)
     ap.add_argument("--test-limit", type=int, default=97)
     ap.add_argument("--model", default=None)
-    ap.add_argument("--ocr-engine", default="easyocr")
+    ap.add_argument("--ocr-engine", default=OCR_ENGINE)
     ap.add_argument("--ocr-variant", default="auto")
     ap.add_argument("--report", default="data/tuning_report.json")
     args = ap.parse_args(argv)

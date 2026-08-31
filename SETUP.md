@@ -14,7 +14,8 @@ Total time: about 20 minutes, most of it waiting for downloads.
 | Python | ~100 MB | step 1, from python.org |
 | PyTorch | ~2.5 GB (GPU) or ~200 MB (CPU) | step 4 |
 | Other libraries | ~1 GB | step 5 |
-| AI models | ~5.4 GB | step 7, automatic on first run |
+| Tesseract OCR | ~100 MB | step 7 |
+| AI models | ~5.4 GB | step 8, automatic on first run |
 
 **About 9 GB of free disk space**, and an internet connection for the first
 run. After that everything works offline.
@@ -168,7 +169,47 @@ went wrong — fix that first.
 
 ---
 
-## Step 7 — First real run (downloads the models)
+## Step 7 — Install Tesseract (the text reader)
+
+This is a **separate program**, not a Python library, so `pip` cannot fetch it.
+
+**Why it matters:** Tesseract is the default reader because it is substantially
+more accurate on these receipts — 62.9% of fields exactly right against
+EasyOCR's 51.7% on the training split, with addresses nearly twice as good. The
+project still runs without it (it falls back to EasyOCR and prints a warning),
+but the numbers in the report assume Tesseract.
+
+**Windows** — download the installer from
+**<https://github.com/UB-Mannheim/tesseract/wiki>** and run it.
+
+> ### ⚠️ Two things to get right in the installer
+>
+> 1. On the **"Choose Components"** screen, expand *Additional language data*
+>    and tick **Malay (msa)**. Without it the Malay half of every receipt is
+>    read by an English-only model.
+> 2. Keep the default install location (`C:\Program Files\Tesseract-OCR`).
+>    The project looks there automatically.
+
+**Mac:** `brew install tesseract tesseract-lang`
+**Linux:** `sudo apt install tesseract-ocr tesseract-ocr-msa`
+
+Check it worked:
+
+```
+.\.venv\Scripts\python.exe -c "import pytesseract; print(pytesseract.get_tesseract_version())"
+```
+
+You should see a version number such as `5.5.3`. If instead you get an error
+about the executable not being found, either reinstall to the default location
+or set the path once:
+
+```
+$env:TESSERACT_CMD = "C:\Program Files\Tesseract-OCR\tesseract.exe"
+```
+
+---
+
+## Step 8 — First real run (downloads the models)
 
 ```
 .\.venv\Scripts\python.exe run_dms.py process sample_receipt.jpg
@@ -188,20 +229,23 @@ These are saved in your home folder, so it only happens **once**.
 Expected result:
 
 ```
-merchant        : PERNIAGAAN RIANG
-date            : 2017-05-10
-subtotal        : 21.32
-tax             : 1.28
-total           : 22.60
-! TAX: 0.00 -> 1.28 (total - subtotal, and printed on the receipt)
+merchant        : KEDAI PAPAN YEW CHUAN
+address         : LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR
+date            : 2018-03-10
+subtotal        : 84.80
+tax             : 4.80
+total           : 84.80
+! TOTAL: 4.80 -> 84.80 (paid - change, and printed on the receipt)
+! TAX 80.00 is 94% of the total - implausible; using 4.80 from the llm layer instead
 ```
 
-That last line is not an error — it is the system correcting a value that OCR
-damaged, and explaining why.
+Those last two lines are not errors — they are the system correcting values that
+OCR damaged, and explaining why. The printed total was misread as `4.80`, and
+the amount tendered proved what it should have been.
 
 ---
 
-## Step 8 — Get some receipts and fill the database
+## Step 9 — Get some receipts and fill the database
 
 The receipt images are not included in the repository (they belong to the
 public dataset, not to this project). Download them with:
@@ -222,7 +266,7 @@ About 30 seconds per receipt, so ~10 minutes for 20. Leave it running.
 
 ---
 
-## Step 9 — Open the app
+## Step 10 — Open the app
 
 ```
 .\.venv\Scripts\streamlit.exe run app.py
@@ -263,8 +307,10 @@ On the **Search** page:
 | `running scripts is disabled on this system` | PowerShell blocks scripts | run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then retry. Affects only that window |
 | Seems frozen on the first receipt | downloading 5 GB of models | wait — it only happens once |
 | `Port 8501 is already in use` | app already running | open <http://localhost:8501>, or add `--server.port 8502` |
-| Search finds nothing | too few documents | process at least 12 receipts (step 8) |
+| Search finds nothing | too few documents | process at least 12 receipts (step 9) |
 | `CUDA out of memory` | graphics card too small | add `--model qwen0.5b`, or `--no-llm` |
+| `tesseract is unavailable; falling back to EasyOCR` | step 7 skipped | install Tesseract, or ignore it — the system still works, just less accurately |
+| Accuracy lower than the report | probably running on the EasyOCR fallback | check step 7; the run prints which engine it used |
 
 ---
 
@@ -291,7 +337,7 @@ model at all — useful for checking things quickly.
 | `dms/` | the system itself — OCR, rules, language model, database, search |
 | `tools/` | evaluation scripts and demonstration helpers |
 | `docs/` | the project report |
-| `data/` | the database and results (receipt images arrive in step 8) |
+| `data/` | the database and results (receipt images arrive in step 9) |
 
 `README.md` explains what the system does and how it performs.
 `docs/ASSIGNMENT_REPORT.md` is the full write-up.

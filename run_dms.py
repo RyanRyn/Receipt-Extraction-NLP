@@ -436,7 +436,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--model", default=None, help="LLM alias or HF repo id")
         p.add_argument("--ocr-variant", default="auto",
                        help="auto | all | raw | gray_otsu | adaptive | clahe_sharp | deskew_otsu")
-        p.add_argument("--ocr-engine", default="easyocr",
+        p.add_argument("--ocr-engine", default=None,
                        choices=["easyocr", "tesseract"],
                        help="OCR backend (see benchmark_ocr.py for a comparison)")
         p.add_argument("--header-only", action="store_true",
@@ -480,7 +480,7 @@ def build_parser() -> argparse.ArgumentParser:
                        help="one receipt through rules / LLM / hybrid, side by side")
     p.add_argument("image")
     p.add_argument("--model", default=None)
-    p.add_argument("--ocr-engine", default="easyocr", choices=["easyocr", "tesseract"])
+    p.add_argument("--ocr-engine", default=None, choices=["easyocr", "tesseract"])
     p.add_argument("--ocr-variant", default="auto")
     p.set_defaults(func=cmd_compare)
 

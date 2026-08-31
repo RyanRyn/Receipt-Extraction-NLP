@@ -39,8 +39,8 @@ When they say *"tell us what you built"*, this is the whole thing:
 > Everything runs locally. No API key, no subscription, no data leaving the
 > machine — which matters because receipts are financial records.
 >
-> On the 97 unseen test receipts it gets **56.1%** of fields exactly right and
-> **68.7%** with fuzzy matching, and the hybrid beats either layer alone.
+> On the 97 unseen test receipts it gets **63.6%** of fields exactly right and
+> **77.3%** with fuzzy matching.
 
 **Do not say more than this unless asked.** It answers "what", "why it's hard",
 "how", and "how well" in four sentences.
@@ -110,22 +110,44 @@ that agreement outranks every single-layer result."*
 
 ### A worked example — say this if they want detail
 
-On `sample_receipt.jpg`, the tax line is smudged. OCR reads it as `1.2g`.
+Run `sample_receipt.jpg` — a timber shop, *Kedai Papan Yew Chuan*. OCR damages
+**two** numbers on it, and the system repairs both, for different reasons.
 
-1. **Clerk:** sees `CUKAI` but can't parse `1.2g` as a number → reports **0.00**.
-2. **Reader:** guesses **1.28**.
-3. **They disagree.** TAX is a rule-owned field, so the clerk wins: 0.00.
-4. **But then arithmetic runs:** subtotal 21.32 + tax 0.00 = 21.32 ≠ total 22.60. ✗
-5. It tries the alternative: 21.32 + **1.28** = 22.60. ✓
-6. It also checks 1.28 is genuinely printed on the receipt — it is.
-7. Tax is corrected to **1.28**, confidence 0.90, and the system prints *why*:
+**Repair 1 — the total.** OCR reads the total as `4.80`.
+
+1. Both layers report 4.80. **Neither one notices**, because on its own it is a
+   perfectly ordinary number.
+2. But the receipt also says cash tendered `84.80` and change `0.00`.
+3. `paid − change` = **84.80**, which is an independent statement of the amount
+   due, computed by the till itself.
+4. Before adopting it, the system checks 84.80 is genuinely printed on the
+   receipt. It is.
+5. Total is corrected to **84.80**.
+
+**Repair 2 — the tax.** The rule layer reads the tax as `80.00`.
+
+1. **Clerk:** finds a tax label, takes `80.00`.
+2. **Reader:** says **4.80**.
+3. They disagree; TAX is a rule-owned field, so the clerk wins: 80.00.
+4. **Then the plausibility check runs:** 80.00 is **94% of the total**.
+   Malaysian GST/SST is 6–10%. That cannot be a tax.
+5. Rather than just deleting it, the system looks at what the losing layer
+   proposed — 4.80 — finds it plausible, and **promotes it**.
 
 ```
-! TAX: 0.00 -> 1.28 (total - subtotal, and printed on the receipt)
+! TAX: rule='80.00' vs llm='4.80' -> kept rule
+! TOTAL: 4.80 -> 84.80 (paid - change, and printed on the receipt)
+! TAX 80.00 is 94% of the total - implausible; using 4.80 from the llm layer instead
 ```
 
-**This is your best 30 seconds in the whole presentation.** It shows the layers,
-the disagreement, the arbitration, and the self-explanation, on real output.
+**This is your best 30 seconds in the whole presentation.** In three printed
+lines it shows the two layers, a disagreement, the routing table deciding it,
+two independent arithmetic checks overruling the result, and the system
+explaining every correction instead of applying it silently.
+
+**If asked "what if both layers are wrong?"** — that is repair 1. Both said
+4.80. The receipt's own arithmetic still caught it, because `paid − change` is
+evidence that comes from neither layer.
 
 ---
 
@@ -135,13 +157,14 @@ Say these without hesitating. Getting a number wrong is worse than not knowing i
 
 | | |
 |---|---|
-| **Headline accuracy** | **56.1% exact, 68.7% fuzzy** |
+| **Headline accuracy** | **63.6% exact, 77.3% fuzzy** |
 | Measured on | **97 receipts**, the unseen `test` split, 4 annotated fields |
-| Rules only | 53.2 / 66.7 |
-| LLM only | 43.2 / 54.5 |
-| **Hybrid gain on `total`** | 64.9% → **76.3%** ← the arithmetic validators |
-| Weakest field | `address`, 22.9% exact |
-| OCR | EasyOCR, Malay + English, ~5 s/receipt |
+| Rules only | 63.8 / 73.9 |
+| LLM only | 52.2 / 64.9 |
+| Train score (for comparison) | 63.3 / 77.7 — gap of **−0.2** |
+| Best field | `total`, 78.4% · `date`, 80.4% |
+| Weakest field | `address`, 36.5% exact (72.9% fuzzy) |
+| OCR | **Tesseract**, `msa`+`eng`, ~7.7 s/receipt |
 | Language model | **Qwen2.5-1.5B-Instruct**, 3.1 GB, Apache-2.0, runs local |
 | Embeddings | **BGE-M3**, 1024 dimensions |
 | Database | SQLite + FTS5 — **40 documents, 600 entities, 206 vectors** |
@@ -150,13 +173,20 @@ Say these without hesitating. Getting a number wrong is worse than not knowing i
 
 ### The train/test protocol — have this ready, it is your strongest card
 
-> We tuned every choice on the **training** split and scored the test split
-> **once**, at the end. An earlier version tuned on the test set and reported
-> 63.3%; that number was inflated by the tuning, so we rebuilt the protocol and
-> report the honest 56.1%.
+> Every choice — the OCR engine, the merge routing, the rule fixes — was made on
+> the **training** split, and the test split was scored **once**, at the end.
+> Train came out at 63.3% and test at 63.6%, a gap of −0.2 points, so the
+> configuration transfers to unseen receipts rather than being fitted to them.
 
-If a marker thinks 56% sounds low, that answer is worth more than the missing
-points. Most student projects cannot say it.
+An earlier version of this project tuned on the test set and reported 63.3%.
+That number was inflated by the tuning. We rebuilt the protocol, and the honest
+figure now happens to land in the same place for a completely different reason —
+a better OCR engine, chosen on training data.
+
+**If a marker points at that coincidence, do not fumble it.** The old 63.3% was
+EasyOCR measured on 30 receipts with the routing fitted to those same receipts.
+The new 63.6% is Tesseract on all 97 test receipts, scored once. Same
+neighbourhood, entirely different provenance.
 
 ---
 
@@ -203,14 +233,39 @@ lookup. We use it for the text search and our own vector table for meaning.
 ### On design decisions
 
 **Q: Why two layers instead of just the LLM?**
-Measured: LLM alone is 43.2%, rules alone 53.2%, hybrid 56.1%. The rules also
-guarantee it never invents a value, and they let the whole system run with **no
-model at all** on a machine that can't host one — that's the `--no-llm` flag.
+Measured on the test split: LLM alone 52.2%, rules alone 63.8%, hybrid 63.6%.
+The LLM alone is clearly the weakest of the three. The rules also guarantee the
+system never invents a value, and they let it run with **no model at all** on a
+machine that cannot host one — that is the `--no-llm` flag.
 
-**Q: Then why not just the rules? They're close and much faster.**
-The 3 points matter most where it counts — `total` goes from 64.9% to 76.3% —
-and the LLM contributes the fields rules can't do at all: address, line items,
-and repairing OCR damage.
+**Q (the hard one): Then why the language model at all? Your own table shows
+rules alone score 63.8% and the hybrid 63.6%. The LLM makes it *worse*.**
+
+Do not dodge this. It is the sharpest question in the project and the honest
+answer is a good one:
+
+> On exact match they are level — 0.2 points apart, well inside the noise of 97
+> receipts. That is a genuine finding, and it was not true earlier: with the
+> weaker OCR engine the hybrid led by three points. Improving the reader took
+> away most of what the language model had to repair.
+>
+> It still earns its place on two axes the exact-match column does not show.
+> It is **3.4 points ahead on fuzzy match** — 77.3% against 73.9% — so when it
+> is wrong it is much closer to right, and on addresses that gap is nine points.
+> And it is more **complete**: it finds a date on 100% of receipts against the
+> rules' 87.6%, and a total on 95.9% against 93.8%. A field the rules never
+> found scores zero on every metric.
+>
+> The honest summary is that the language model has stopped being an accuracy
+> win and become a *robustness* win. On a harder corpus — worse printing, more
+> Malay, fewer printed labels — I would expect the gap to reopen.
+
+**Q: So why not ship the rules-only configuration?**
+Because that decision would be made by looking at the test score, which is the
+one thing the protocol forbids. On the **training** split the hybrid won
+(63.3% against 62.3%), so the hybrid was frozen and shipped. Changing it now
+because the test result came out differently is exactly the leakage we removed
+earlier in the project.
 
 **Q: Why Qwen2.5-1.5B and not something bigger?**
 We benchmarked four (report §5). Qwen2.5-3B scored slightly better on fuzzy but
@@ -241,13 +296,16 @@ This is the sharpest question in the pack. Answer:
 > text. That's why the cascade runs both and takes the union rather than choosing
 > one. Lexical is cheap and precise; semantic covers what it structurally cannot.
 
-**Q: 56% doesn't sound very high.**
+**Q: 63% doesn't sound very high.**
 
-> It's an honest number — selected on train, scored once on test. It's also
-> macro-averaged over four fields including `address`, which is the hardest and
-> drags the mean down; `total` is 76.3% and `date` 78.4%. And the OCR ceiling
-> caps us: on some receipts the field simply isn't legible after thermal
-> printing, so no extractor could recover it.
+> It's an honest number — every choice selected on train, test scored once. It's
+> also macro-averaged over four fields including `address`, the hardest, which
+> drags the mean down: `date` is 80.4% and `total` 78.4%. On fuzzy match the
+> figure is 77.3%. And the OCR ceiling caps us — on some receipts the field
+> simply is not legible after thermal printing, so no extractor could recover
+> it. We raised the headline from 56.1% to 63.6% purely by changing the reader,
+> which is evidence that OCR, not the extraction logic, is the binding
+> constraint.
 
 **Q: Did you tune anything on the test set?**
 No — and say it firmly. `tools/tune_on_train.py` selects the routing on the
@@ -264,20 +322,36 @@ Report §10 is the declaration. Answer honestly and specifically.
 Volunteering a real limitation reads as mastery. Having none reads as not
 understanding your own system.
 
-1. **The tax-inclusive guard over-suppresses.** When a receipt says "inclusive of
-   GST", we disable the arithmetic checks — correctly, because `subtotal + tax =
-   total` is deliberately false there. But we *also* disable the plausibility
-   bound, which is a magnitude check and still valid. Result: 3 of the 40 stored
-   documents carry a "tax" equal to ~100% of the subtotal. Found by writing a
-   tax-rate validator (drill 3 below).
-2. **`address` is 22.9%.** Multi-line, no consistent label, worst OCR damage.
-   Rules-only actually scores marginally *higher* (24.0%) — our routing picked
-   the LLM on training-split fuzzy score, and that choice doesn't hold on test
-   exact.
-3. **The OCR ceiling.** Field recoverability is 87.5% for EasyOCR — on ~1 receipt
-   in 8 the field is not legible at all, so extraction cannot succeed.
-4. **Tesseract measured better than EasyOCR** (91.2% recoverability) but is 2.3×
-   slower, so it's available as an option rather than the default.
+1. **A bug we found and fixed — tell this as a story, not an apology.**
+   `is_tax_inclusive()` was disabling the *entire* validation block on receipts
+   that say "inclusive of GST". Disabling the arithmetic identity there is
+   correct, because `subtotal + tax = total` is deliberately false. But it also
+   disabled the **plausibility bound**, which is a magnitude test and stays valid
+   either way. Three stored documents ended up with a "tax" equal to the whole
+   subtotal, each time overriding a correct figure from the language model.
+   Fixed by moving that one check outside the guard, and improved further: when
+   an implausible tax is rejected, the value proposed by the *other* layer is now
+   promoted if it is plausible, instead of the field being dropped. Plausible
+   taxes went from 7 of 14 to **16 of 22**.
+
+2. **`address` is the weakest field at 36.5% exact** — multi-line, no consistent
+   label, worst OCR damage. Rules-only actually scores *higher* on exact (41.7%)
+   while the hybrid is far better on fuzzy (72.9% against 63.5%). Our routing
+   sends `ADDRESS` to the language model because that won on the training split;
+   on test that costs 0.2 points overall. We left it, because changing it after
+   seeing the test score is leakage.
+
+3. **OCR is the binding constraint, not the extraction logic.** Changing nothing
+   but the reader moved the headline from 56.1% to 63.6%. Roughly a quarter of
+   remaining `company` errors are single-character OCR damage — `Matketing` for
+   `MARKETING`, `AFON` for `AEON` — which no rule can repair.
+
+4. **The merchant name is still fragile when it spans lines.** We join a
+   corporate suffix line backwards onto the brand above it, but only when the
+   suffix line cannot stand alone. A broader rule was measured on the training
+   split and lost 6.7 points, because it swallowed slogans printed above the
+   name.
+
 5. **No layout model.** We read text, not visual structure. A two-column receipt
    confuses the line reconstruction.
 
@@ -374,24 +448,38 @@ if sub is not None and tax is not None and sub > 0 and tax > 0:
         )
 ```
 
-**Verified result** — run against the 40 stored documents this fires on **7 of
-the 14** that have both a subtotal and a tax:
+**Verified result** — run against the 40 stored documents this fires on **6 of
+the 22** that have both a subtotal and a tax:
 
 | doc | file | subtotal | tax | rate |
 |---|---|---|---|---|
-| 36 | test_00004.jpg | 26.60 | 26.60 | 100.0% |
-| 67 | test_00035.jpg | 10.40 | 10.40 | 100.0% |
-| 38 | test_00006.jpg | 277.90 | 277.00 | 99.7% |
-| 60 | test_00028.jpg | 24.11 | 8.58 | 35.6% |
+| 12 | test_00011.jpg | 0.38 | 0.38 | 100.0% |
+| 25 | test_00024.jpg | 17.05 | 6.30 | 37.0% |
+| 15 | test_00014.jpg | 12.00 | 2.12 | 17.7% |
+| 29 | test_00028.jpg | 24.11 | 0.52 | 2.2% |
 
-**What to say — and this is the strong move:** *"It immediately flags a real
-defect. On those receipts the rule layer read the subtotal again as the tax, and
-the language model had it right — but our routing gives TAX to the rules. It gets
-through because those receipts say 'inclusive of GST', and we suppress the
-plausibility check on tax-inclusive receipts. That suppression is too broad: the
-identity check should be disabled, but the magnitude check is still valid."*
+**What to say:** *"Six of twenty-two are outside a plausible Malaysian tax band,
+so the rule earns its place immediately — and it also shows its own limits."*
 
-Volunteering that is worth more than a clean run.
+Then point at **doc 29**, which is the interesting one:
+
+> *"2.2% looks wrong, but it is not. That receipt is an AEON basket mixing
+> zero-rated groceries with standard-rated items, so the effective rate across
+> the whole bill genuinely is below 6%. My check compares tax against the whole
+> subtotal, when GST applies only to part of it. A stricter version would need
+> the per-item tax codes, which this receipt prints but we do not parse."*
+
+**Why this is the strongest of the three drills.** You add a rule, it finds real
+problems, and you can immediately explain which of its own findings are false
+positives and why. That is the difference between running code and understanding
+it — which is what Aspect 11 actually asks for.
+
+> **This exact drill already paid off once.** Writing it during preparation
+> exposed a genuine bug: `is_tax_inclusive()` was suppressing the whole
+> validation block on tax-inclusive receipts, including the magnitude check,
+> which is still valid there. Three stored documents carried a "tax" equal to
+> the entire subtotal. It is fixed — see limitation 1 below — and the plausible
+> count went from 7 of 14 to 16 of 22.
 
 ---
 
@@ -422,8 +510,11 @@ fallback the assignment asks for"*.
 - Database is **already loaded with 40 receipts** — search never depends on the
   live run.
 - Have the receipt file **already open in the file picker** before you start.
-- It takes ~30 seconds. **Talk through the stages while it runs** — don't stand
-  in silence. Use the time to explain preprocessing variant selection.
+- It takes **~40 seconds** with Tesseract (about 13s reading the image, then
+  ~27s in the language model). **Talk through the stages while it runs** — don't
+  stand in silence. That is exactly the window for explaining how the
+  preprocessing variant is chosen, and it is long enough that silence would be
+  uncomfortable.
 - Pick the receipt on Friday and run it three times on the presentation machine.
 
 ---

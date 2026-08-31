@@ -41,18 +41,25 @@ python run_dms.py process sample_receipt.jpg
 ```
 
 ```
-merchant        : PERNIAGAAN RIANG
-invoice_no      : R000039737
-date            : 2017-05-10
-time            : 21:51
-subtotal        : 21.32
-tax             : 1.28
-total           : 22.60
-paid            : 30.00
-change          : 7.40
+merchant        : KEDAI PAPAN YEW CHUAN
+address         : LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR
+phone           : 03-87686092
+date            : 2018-03-10
+time            : 13:49
+subtotal        : 84.80
+tax             : 4.80
+total           : 84.80
+paid            : 84.80
 payment_method  : CASH
-! TAX: 0.00 -> 1.28 (total - subtotal, and printed on the receipt)
+! TAX: rule='80.00' vs llm='4.80' -> kept rule
+! TOTAL: 4.80 -> 84.80 (paid - change, and printed on the receipt)
+! TAX 80.00 is 94% of the total - implausible; using 4.80 from the llm layer instead
 ```
+
+The three `!` lines are the point of the whole system. OCR misread the total as
+`4.80` and the tax as `80.00`; neither layer noticed on its own. The receipt's
+own arithmetic caught both, and each correction says *why* it was made rather
+than being applied silently.
 
 No GPU, or want it instantly? The rule layer alone needs no model download:
 
@@ -120,18 +127,37 @@ a `filename` column.
 ### Measured accuracy
 
 **All 97 receipts** of the dataset's `test` split, macro-averaged over its four
-annotated fields. The configuration was selected on the *training* split and the
-test split scored once, so these figures are not flattered by tuning.
+annotated fields, read with the default Tesseract engine. The configuration was
+selected on the *training* split and the test split scored once, so these
+figures are not flattered by tuning. Train scored 63.3% against test's 63.6% —
+a generalisation gap of −0.2 points, i.e. it transfers to unseen receipts.
 
 | Configuration | Exact | Fuzzy |
 |---|---|---|
-| Rules only (`--no-llm`) | 53.2% | 66.7% |
-| LLM only (`--no-rules`) | 43.2% | 54.5% |
-| **Hybrid** | **56.1%** | **68.7%** |
+| Rules only (`--no-llm`) | **63.8%** | 73.9% |
+| LLM only (`--no-rules`) | 52.2% | 64.9% |
+| **Hybrid** (shipped) | 63.6% | **77.3%** |
 
-The hybrid's advantage is concentrated on `total`, the field the arithmetic
-validators protect: 64.9% → **76.3%**. Full per-field breakdown, the
-train/test protocol and error analysis in `docs/ASSIGNMENT_REPORT.md` S5.
+Two things in that table deserve saying out loud rather than hiding.
+
+**The rule layer alone matches the hybrid on exact match** — 63.8% against
+63.6%, a gap far inside the noise of 97 receipts. That was not true with the
+weaker OCR, where the hybrid led by three points. A better reader leaves less
+for the language model to repair.
+
+**The hybrid still earns its place on the other two axes.** It is 3.4 points
+ahead on fuzzy match, and it is markedly more *complete*: it finds a date on
+100% of receipts against the rules' 87.6%, and a total on 95.9% against 93.8%.
+On addresses it is 72.9% fuzzy against 63.5% — much closer to right even when
+not exactly right.
+
+The shipped configuration routes `ADDRESS` to the language model because that
+won on the **training** split (63.3% against 62.3%). On test it turns out to
+cost 0.2 points. That is left as it stands: changing it now, having seen the
+test score, is precisely the leakage the protocol exists to prevent.
+
+Full per-field breakdown, the train/test protocol and error analysis in
+`docs/ASSIGNMENT_REPORT.md` S5.
 
 Useful flags: `--no-llm`, `--no-rules`, `--model <alias|repo>`,
 `--ocr-variant auto|all|raw|gray_otsu|adaptive|clahe_sharp|deskew_otsu`,
@@ -142,7 +168,7 @@ Useful flags: `--no-llm`, `--no-rules`, `--model <alias|repo>`,
 ## How it works
 
 ```
-image → OCR (EasyOCR ms+en, adaptive preprocessing, line reconstruction)
+image → OCR (Tesseract msa+eng, adaptive preprocessing, line reconstruction)
       → NER  ├── rule layer  (bilingual lexicon + layout regex)
              └── local LLM   (Qwen2.5-1.5B-Instruct, few-shot BM+EN)
       → merge + arithmetic validation
@@ -150,6 +176,10 @@ image → OCR (EasyOCR ms+en, adaptive preprocessing, line reconstruction)
       → semantic index (BGE-M3 embeddings)
       → search: exact → substring → lexical+semantic → place fallback
 ```
+
+Diagrams of all of this — architecture, pipeline, the merge, the search
+cascade — are in [`docs/diagrams/`](docs/diagrams/DIAGRAMS.md). Open
+`docs/diagrams/diagrams.html` to export any of them as PNG or SVG.
 
 Full stage-by-stage walkthrough: **`docs/ASSIGNMENT_REPORT.md`** S3.
 
@@ -166,7 +196,7 @@ Full rationale, technology comparison and results: **`docs/ASSIGNMENT_REPORT.md`
 
 | Path | Purpose |
 |---|---|
-| `dms/ocr.py` | preprocessing variants, EasyOCR, line reconstruction, polygons |
+| `dms/ocr.py` | preprocessing variants, Tesseract + EasyOCR backends, line reconstruction, polygons |
 | `dms/lexicon.py` | all Malay/English vocabulary and the place gazetteer |
 | `dms/rules.py` | deterministic bilingual extractor (baseline) |
 | `dms/llm.py` | local LLM loading, prompting, JSON recovery |
@@ -183,7 +213,11 @@ Full rationale, technology comparison and results: **`docs/ASSIGNMENT_REPORT.md`
 | `tools/evaluate.py` | scoring against dataset ground truth + ablation |
 | `tools/tune_on_train.py` | selects routing on train, scores test once |
 | `tools/benchmark_ocr.py` · `tools/benchmark_llm.py` · `tools/benchmark_embeddings.py` | the model comparisons behind S5 of the report |
+| `tools/render_diagrams.py` | builds the diagram page from `docs/diagrams/DIAGRAMS.md` |
 | **`docs/ASSIGNMENT_REPORT.md`** | **the submission document** — problem, background, methodology, results, pseudocode, algorithm analysis |
+| `docs/diagrams/` | architecture, pipeline, merge and search figures (Mermaid + PNG/SVG export) |
+| `docs/DEFENCE_PACK.md` | presentation and Q&A preparation, with live-edit drills |
+| `docs/SEARCH_BRIEFING.md` | briefing for whoever demonstrates the search half |
 
 ---
 
@@ -204,6 +238,13 @@ also works.
 
 ## Notes
 
+* **OCR engine.** **Tesseract is the default.** On the 120-receipt training
+  split it read the four annotated fields far more accurately than EasyOCR —
+  63.3% exact against 51.7%, with `address` more than doubling — for about 2.5s
+  more per receipt. It is a separate program rather than a pip package, so
+  `SETUP.md` step 7 installs it; without it the system falls back to EasyOCR,
+  prints a warning, and scores below the figures above. Switch at any time with
+  `--ocr-engine easyocr`, the GUI dropdown, or `DMS_OCR_ENGINE=easyocr`.
 * **GPU.** `torch` was reinstalled as `2.13.0+cu126` for the RTX 4060, taking
   the LLM from ~2.7 to ~10–13 tok/s. On a CPU-only machine everything still
   runs; use `--no-llm` for demos. See `requirements.txt`.

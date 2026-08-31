@@ -361,6 +361,28 @@ def _fix_implausible_tax(merged: list[Entity], warnings: list[str]) -> None:
         tax_ent.meta = dict(tax_ent.meta or {}, reclassified_from="TAX")
         return
 
+    # Before discarding it, check what the layer that *lost* the merge proposed.
+    # A money value from the LLM was already tested against the printed text when
+    # it was created, so promoting it here adopts evidence that was gathered and
+    # then thrown away by the routing table - it does not invent anything.
+    alt = parse_money((tax_ent.meta or {}).get("alternative"))
+    if alt is not None and 0 < alt <= total * TAX_MAX_FRACTION:
+        meta = tax_ent.meta or {}
+        warnings.append(
+            f"TAX {tax_ent.value} is {tax / total:.0%} of the total - implausible; "
+            f"using {format_money(alt)} from the {meta.get('alternative_source', 'other')} "
+            "layer instead"
+        )
+        tax_ent.value = format_money(alt)
+        tax_ent.source = f"{meta.get('alternative_source', 'llm')}+plausibility"
+        tax_ent.confidence = 0.65
+        if meta.get("alternative_start", -1) >= 0:
+            tax_ent.start = meta["alternative_start"]
+            tax_ent.end = meta["alternative_end"]
+            tax_ent.text = meta.get("alternative_text") or tax_ent.text
+        tax_ent.meta = dict(meta, reinstated_from="alternative")
+        return
+
     warnings.append(
         f"TAX {tax_ent.value} is {tax / total:.0%} of the total - implausible, dropped"
     )
@@ -539,8 +561,13 @@ class HybridNER:
         if not tax_inclusive:
             _arbitrate_money(merged, warnings)
         _repair_total_from_payment(merged, ocr_text, warnings)
+        # The plausibility bound is a *magnitude* test - Malaysian GST/SST is
+        # 6-10% of the bill whether or not the printed prices include it - so
+        # unlike the identity checks above it remains valid on a tax-inclusive
+        # receipt. Suppressing it there let a "tax" equal to the entire subtotal
+        # survive, overriding the correct figure the model had proposed.
+        _fix_implausible_tax(merged, warnings)
         if not tax_inclusive:
-            _fix_implausible_tax(merged, warnings)
             _recover_tax_from_text(merged, ocr_text, warnings)
 
         fields = {}

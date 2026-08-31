@@ -137,7 +137,7 @@ So why use them?**
    individually on what you can explain accurately; a confident wrong answer
    costs more than a handover.
 
-2. **Don't quote an accuracy figure for search.** The 56.1% headline is the
+2. **Don't quote an accuracy figure for search.** The 63.6% headline is the
    *extraction* accuracy. Search was measured separately with Recall@1, Recall@5
    and MRR. If pressed: *"Recall@1 of 86.4% for the embedding model on our
    retrieval probes."*
