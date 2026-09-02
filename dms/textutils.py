@@ -22,6 +22,50 @@ def normalize_spaces(s: str) -> str:
     return re.sub(r"\s+", " ", s or "").strip()
 
 
+
+# Characters a printed logo, border rule or table line degrades into when OCR
+# tries to read it as text. A *standalone* run of these cannot be part of any
+# real name, so it is safe to drop.
+#
+# The set is deliberately narrow. "&" is excluded because it is load-bearing in
+# Malaysian addresses - "LOT 1851-A & 1851-B", "LOT G18 & G19" - and an earlier,
+# broader version of this rule silently deleted it. Brackets are excluded too,
+# so "AEON CO. (M) BHD" survives intact. Only marks that carry no meaning on a
+# receipt are listed.
+_GRAPHIC_CHARS = "".join(chr(c) for c in (
+    0x7C, 0x00A6, 0x2016,               # | broken-bar double-bar (border rules)
+    0x2014, 0x2013, 0x005F, 0x003D,     # em/en dash, underscore, equals
+    0x007E, 0x003C, 0x003E,             # tilde, angle brackets
+    0x002A, 0x005C,                     # asterisk, backslash (logo strokes)
+    0x2500, 0x2502, 0x250C, 0x2510,     # box drawing
+    0x2514, 0x2518, 0x251C, 0x2524,
+    0x252C, 0x2534, 0x253C, 0x2588,
+))
+# Trailing punctuation stuck to the run is taken with it, so "| |," in the
+# middle of an address disappears cleanly instead of leaving a stray bar.
+_GRAPHIC_TOKEN = re.compile(
+    rf"(?<!\S)[{re.escape(_GRAPHIC_CHARS)}]+[,.;:]*(?!\S)")
+
+
+def strip_graphic_noise(value: str) -> str:
+    """Remove logo and border artefacts from a name or address.
+
+    A receipt header is the one place a graphic sits next to the text that
+    matters. OCR reads the logo's outline as stray glyphs - most often a run of
+    pipes from a border - and those land inside the merchant name, so
+    "PASAR MINI JIN SENG" is stored as "| PASAR MINI JIN SENG | |" and no longer
+    matches anything a user would type.
+
+    Confidence cannot be used to detect them: measured over the stored corpus a
+    stray "|" scores up to 0.97, higher than much of the real text around it.
+    What does separate them is that they are standalone tokens containing no
+    letter and no digit.
+    """
+    if not value:
+        return value
+    cleaned = _GRAPHIC_TOKEN.sub(" ", value)
+    return normalize_spaces(cleaned).strip(" ,.-’'\"")
+
 def strip_accents(s: str) -> str:
     return "".join(
         c for c in unicodedata.normalize("NFKD", s) if not unicodedata.combining(c)

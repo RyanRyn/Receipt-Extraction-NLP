@@ -32,6 +32,7 @@ from dms.textutils import find_money_values
 from dms.schema import MONEY_TYPES, Entity
 from dms.textutils import (
     format_money,
+    strip_graphic_noise,
     locate_span,
     normalize_spaces,
     parse_money,
@@ -115,7 +116,13 @@ def _llm_to_entities(data: dict, ocr_text: str,
         raw = data.get(key)
         if raw is None or (isinstance(raw, str) and not raw.strip()):
             continue
-        value = format_money(parse_money(raw)) if etype in MONEY_TYPES else normalize_spaces(str(raw))
+        if etype in MONEY_TYPES:
+            value = format_money(parse_money(raw))
+        elif etype in ("MERCHANT", "ADDRESS"):
+            # The model reads the same logo artefacts the rules do.
+            value = strip_graphic_noise(str(raw))
+        else:
+            value = normalize_spaces(str(raw))
         if not value:
             continue
         if etype not in MONEY_TYPES and value.strip(" -.").lower() in _NULL_WORDS:

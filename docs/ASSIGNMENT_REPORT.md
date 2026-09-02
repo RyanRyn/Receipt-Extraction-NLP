@@ -728,26 +728,62 @@ binding constraint on the task**.
 
 ### 5.5 Extraction model comparison
 
-Four candidates, each unloaded before the next was loaded (30 receipts).
+Nine candidates were tried in total, each unloaded before the next was loaded so
+that an 8 GB card holds exactly one model at a time. Llama-3.2 and Gemma-3 were
+excluded despite fitting: both are gated on HuggingFace and require account
+approval, which would break this project's constraint of running with no account
+and no token.
 
-| Model | LLM only | Hybrid exact | Hybrid fuzzy | s/receipt | Peak VRAM |
+Sixty training receipts, Tesseract OCR, identical text shown to every model:
+
+| Model | Params | LLM only | Hybrid exact | s/receipt | Peak VRAM |
 |---|---|---|---|---|---|
-| *(rules only)* | — | 60.8% | 69.2% | **0.0** | **0.0** |
-| **Qwen2.5-1.5B-Instruct** | 51.7% | **63.3%** | 70.8% | ~12 | 3.4 GB |
-| Qwen3-1.7B | 50.8% | 61.7% | 67.5% | 14.7 | 4.3 GB |
-| Qwen2.5-3B-Instruct | **55.0%** | 62.5% | **74.2%** | 21.3 | 6.8 GB |
-| Malaysian-Qwen2.5-3B-Instruct | 47.5% | 62.5% | 72.5% | 53.4 | 7.3 GB |
+| Qwen2.5-1.5B-Instruct | 1.54B | 48.3% | 58.8% | ~15 | 3.4 GB |
+| **Qwen3.5-0.8B** | **0.87B** | 52.5% | **59.6%** | 15.0 | **2.0 GB** |
+| Qwen3.5-2B | 2.27B | **54.6%** | 58.8% | 16.8 | 4.1 GB |
+| Qwen3-1.7B | 2.03B | 54.6% | 58.3% | 14.5 | 4.3 GB |
+| Qwen2.5-3B-Instruct | 3.09B | **59.2%** | **61.3%** | **72.6** | 6.8 GB |
 
-1. **Scaling the model up did not improve the system.** Qwen2.5-3B reads better
-   in isolation (55.0% against 51.7%) yet its hybrid score is no higher — the
-   rule layer and validators already supplied what the smaller model missed.
-2. **The Malaysian-tuned model was the weakest** and by far the slowest. Domain
-   tuning for Malaysian *language* does not transfer to structured *extraction*;
-   this project's Malay coverage comes from an explicit lexicon.
-3. **The spread is within noise.** One field is 0.83 points at this sample size.
+Three findings, and the third is the important one.
 
-**Decision: Qwen2.5-1.5B-Instruct** — fastest, smallest, statistically
-indistinguishable from models four times its size.
+1. **The newer generation is a better *model* but not a better *system*.** Every
+   Qwen3.5 variant beat the 1.5B baseline on LLM-only accuracy by four to six
+   points, yet the hybrid score moved by at most 0.8. The rule layer and the
+   arithmetic validators already supply most of what the model contributes, so
+   improving the model alone has little left to fix. This is the same pattern as
+   §5.4: the pipeline is rule-dominated.
+
+2. **Scaling up buys accuracy at a price the demonstration cannot pay.**
+   Qwen2.5-3B is the most accurate configuration measured (61.3%), but at 72.6s
+   per receipt and 6.8 GB of an 8 GB card. The 72.6s is not the model's intrinsic
+   speed; it is memory pressure, since 6.8 GB leaves almost no headroom. A live
+   upload would take about 80 seconds and risk an out-of-memory failure in front
+   of an examiner, for a gain of roughly four field judgements out of 240.
+
+3. **Sixty receipts is too small a sample to choose between close models — and
+   acting on it produced the wrong answer.** On this 60-receipt comparison
+   Qwen3.5-0.8B led the 1.5B baseline, 59.6% against 58.8%, so it was adopted.
+   Re-measured over the full 120-receipt training split the ranking *reversed*:
+
+   | Model | Train (120) exact | Test (97) exact | Test fuzzy |
+   |---|---|---|---|
+   | **Qwen2.5-1.5B-Instruct** | **63.3%** | **63.6%** | **77.3%** |
+   | Qwen3.5-0.8B | 62.9% | 62.3% | 74.2% |
+
+   The entire loss falls on `address` — 36.5% against 31.2% on test — which is
+   precisely the one field routed to the language model (§5.3). A model half the
+   size reads a long, damaged address block less well, and nothing else in the
+   pipeline depends on it strongly enough to show the difference.
+
+**Decision: Qwen2.5-1.5B-Instruct**, reverted to after the fuller measurement.
+The selection was made on training data both times; the test split confirmed the
+corrected choice rather than informing it.
+
+The methodological point is worth stating plainly, because it nearly cost this
+project a point of accuracy: a difference of under one point between two models
+is not a result at 60 receipts. It was treated as one, the change was made, and
+only the larger sample exposed it. Sample size is quoted alongside every
+comparison in this section for that reason.
 
 ### 5.6 Embedding model comparison
 

@@ -211,9 +211,15 @@ class Scoreboard:
             print(f"  {f:<12}{exact}{fuzzy}{self.found[f] / n:>9.1%}{m:>10}")
         scored = sum(self.labelled.values())
         if scored:
-            macro_e = sum(self.exact.values()) / scored
-            macro_f = sum(self.fuzzy.values()) / scored
-            print(f"  {'OVERALL':<12}{macro_e:>8.1%}{macro_f:>9.1%}")
+            # A *micro* average: every labelled field judgement is pooled, so a
+            # field with more ground truth carries more weight. It is not the
+            # mean of the four per-field rates (a macro average). With this
+            # dataset the two nearly coincide, because the fields are labelled
+            # 97/97/96/97 times - but they are different measures and the
+            # distinction is worth keeping straight.
+            micro_e = sum(self.exact.values()) / scored
+            micro_f = sum(self.fuzzy.values()) / scored
+            print(f"  {'OVERALL':<12}{micro_e:>8.1%}{micro_f:>9.1%}")
         else:
             print(f"  {'OVERALL':<12}{'-':>8}{'-':>9}   (no ground truth supplied)")
 

@@ -279,11 +279,44 @@ one thing the protocol forbids. On the **training** split the hybrid won
 because the test result came out differently is exactly the leakage we removed
 earlier in the project.
 
-**Q: Why Qwen2.5-1.5B and not something bigger?**
-We benchmarked four (report §5). Qwen2.5-3B scored slightly better on fuzzy but
-took 21 s/receipt against 12 s and needed 6.8 GB VRAM against 3.4 GB. 1.5B was
-the best accuracy-per-second. The alias system means you can swap with
-`--model qwen3b` — no code change.
+**Q: Why Qwen2.5-1.5B? Isn't there a newer Qwen?**
+
+There is — Qwen3.5. We tested it, and the answer is more interesting than "we
+used the newest":
+
+> Qwen3.5 comes in 0.8B, 2B and 4B — there is no 1.5B, and the 4B needs 9.3 GB
+> so it will not fit an 8 GB card. We benchmarked 0.8B and 2B against the
+> current model. Every Qwen3.5 variant was a **better model** — four to six
+> points higher on LLM-only accuracy — but the **hybrid barely moved**, at most
+> 0.8 points, because the rule layer already supplies most of what the model
+> contributes.
+
+**Q: So did you switch?**
+
+Say this exactly, because it is the strongest methodological answer in the pack:
+
+> We did, and then we reverted. On a 60-receipt comparison Qwen3.5-0.8B led,
+> 59.6% against 58.8%, so we adopted it. Re-measured on the full 120-receipt
+> training split the ranking reversed — 62.9% against 63.3% — and the test split
+> agreed, 62.3% against 63.6%. The whole loss was in `address`, which is the one
+> field routed to the language model, and a model half the size reads a long
+> damaged address block less well.
+>
+> The lesson is that a sub-one-point gap at 60 receipts is not a result. We
+> treated it as one, made the change, and the larger sample caught it.
+
+**Q: Why not a bigger model?**
+Qwen2.5-3B is the most accurate we measured — 61.3% hybrid — but 72.6s per
+receipt against ~15s, and 6.8 GB of an 8 GB card. That is ~80 seconds of silence
+for a live upload and a real out-of-memory risk, to gain about four field
+judgements out of 240. Declined deliberately.
+
+**Q: Did you only try Qwen?**
+No — we checked Llama-3.2, Gemma-3, Phi-4-mini, IBM Granite, SmolLM2, Falcon3
+and LFM2. Llama and Gemma are **gated**: they need a HuggingFace account and
+manual approval, which breaks the project's "no account, no token" constraint.
+Phi-4-mini needs 7.1 GB and will not fit. The alias system means any of them can
+be swapped in with `--model <name>` and no code change.
 
 **Q: Why SQLite rather than MySQL or Postgres?**
 It's a single file, needs no server, and the whole project is meant to run from a
@@ -311,7 +344,7 @@ This is the sharpest question in the pack. Answer:
 **Q: 63% doesn't sound very high.**
 
 > It's an honest number — every choice selected on train, test scored once. It's
-> also macro-averaged over four fields including `address`, the hardest, which
+> also micro-averaged over four fields including `address`, the hardest, which
 > drags the mean down: `date` is 80.4% and `total` 78.4%. On fuzzy match the
 > figure is 77.3%. And the OCR ceiling caps us — on some receipts the field
 > simply is not legible after thermal printing, so no extractor could recover

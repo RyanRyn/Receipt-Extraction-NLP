@@ -126,8 +126,11 @@ a `filename` column.
 
 ### Measured accuracy
 
-**All 97 receipts** of the dataset's `test` split, macro-averaged over its four
-annotated fields, read with the default Tesseract engine. The configuration was
+**All 97 receipts** of the dataset's `test` split, micro-averaged over its four
+annotated fields, read with the default Tesseract engine. *Micro* means every
+labelled field judgement is pooled rather than averaging the four per-field
+rates; here the two agree to within 0.1 points because the fields are labelled
+almost equally often. The configuration was
 selected on the *training* split and the test split scored once, so these
 figures are not flattered by tuning. Train scored 63.3% against test's 63.6% —
 a generalisation gap of −0.2 points, i.e. it transfers to unseen receipts.

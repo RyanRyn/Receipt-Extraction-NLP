@@ -56,11 +56,38 @@ LLM_MODELS = {
     "qwen1.5b":     "Qwen/Qwen2.5-1.5B-Instruct",                    # ~3.1 GB  <- default
     "qwen3-1.7b":   "Qwen/Qwen3-1.7B",                               # ~3.4 GB
     "qwen3b":       "Qwen/Qwen2.5-3B-Instruct",                      # ~6.2 GB
+    # Qwen3.5 generation. Note there is no 1.5B in this family - the sizes are
+    # 0.8B, 2B, 4B and a 122B MoE - so 2B is the nearest replacement for the
+    # 1.5B default. 4B needs ~9.3 GB in float16 and will not fit an 8 GB card.
+    "qwen3.5-0.8b": "Qwen/Qwen3.5-0.8B",                             # ~1.7 GB
+    "qwen3.5-2b":   "Qwen/Qwen3.5-2B",                               # ~4.5 GB
+    "qwen3.5-4b":   "Qwen/Qwen3.5-4B",                               # ~9.3 GB, >8 GB VRAM
+    # Non-Qwen alternatives, included so the comparison is not confined to one
+    # vendor. All four are ungated: Llama-3.2 and Gemma-3 were excluded despite
+    # fitting, because they require HuggingFace account approval and this
+    # project must run with no account and no token.
+    "granite2b":    "ibm-granite/granite-3.3-2b-instruct",            # ~4.7 GB
+    "smollm2-1.7b": "HuggingFaceTB/SmolLM2-1.7B-Instruct",            # ~3.2 GB
+    "falcon3-1b":   "tiiuae/Falcon3-1B-Instruct",                     # ~3.1 GB
+    "lfm2-1.2b":    "LiquidAI/LFM2-1.2B",                             # ~2.2 GB
     # Malaysian-tuned variants (better Bahasa Melayu / Manglish coverage)
     "malaysian1.5b": "mesolitica/Malaysian-Qwen2.5-1.5B-Instruct-v0.1",
     "malaysian3b":   "mesolitica/Malaysian-Qwen2.5-3B-Instruct",
 }
 
+# Selected on the training split, and the choice is not the obvious one.
+#
+# A 60-receipt comparison put Qwen3.5-0.8B ahead of this model (hybrid 59.6%
+# against 58.8%), which is why it was tried. Re-measured over the full 120
+# training receipts the ranking reverses - 62.9% against 63.3% - and the test
+# split confirms it: 62.3% against 63.6%, with the whole loss in `address`,
+# the one field the language model owns. Sixty receipts could not separate two
+# models a point apart; that subset was simply too small.
+#
+# Qwen2.5-3B scores higher again (61.3% on the 60-receipt comparison) but needs
+# 72.6s per receipt against ~15s, and 6.8 GB of an 8 GB card. That trade was
+# declined: the rubric rewards no accuracy threshold, and an out-of-memory
+# failure during a live demonstration costs more than two points.
 DEFAULT_LLM_KEY = os.getenv("DMS_LLM", "qwen1.5b")
 
 # Deterministic decoding: extraction must be reproducible for a report.

@@ -35,6 +35,7 @@ from dms.lexicon import (
 )
 from dms.schema import Entity
 from dms.textutils import (
+    strip_graphic_noise,
     find_money_values,
     format_money,
     normalize_date,
@@ -279,7 +280,8 @@ def _extract_merchant(lines: list[tuple[str, int]]) -> Entity | None:
             start = poff + pline.index(pstr)
             text = f"{pstr} {text}"
 
-    cleaned = _REG_SUFFIX.sub("", normalize_spaces(text)).strip(" ,.-")
+    cleaned = strip_graphic_noise(
+        _REG_SUFFIX.sub("", normalize_spaces(text)).strip(" ,.-"))
     return _mk("MERCHANT", cleaned or normalize_spaces(text), text,
                start, end, conf=0.72)
 
@@ -307,7 +309,8 @@ def _extract_address(lines: list[tuple[str, int]], merchant_end: int) -> Entity 
     if not picked:
         return None
     text = ", ".join(p[0] for p in picked)
-    cleaned = _REG_PREFIX.sub("", normalize_spaces(text)).strip(" ,.-")
+    cleaned = strip_graphic_noise(
+        _REG_PREFIX.sub("", normalize_spaces(text)).strip(" ,.-"))
     return _mk("ADDRESS", cleaned or normalize_spaces(text), text,
                picked[0][1], picked[-1][2], conf=0.7)
 
