@@ -588,6 +588,10 @@ answer, and Aspect 11 says *"accurately"*.
 - [ ] `.\.venv\Scripts\python.exe test_dms.py` → 112 checks pass
 - [ ] `.\.venv\Scripts\python.exe tools/prepare_demo.py` → READY TO PRESENT
 - [ ] Streamlit opens, Database page shows **40 documents**
+- [ ] **Turn "Save to database" OFF while rehearsing.** It defaults to ON, so
+      every practice run adds a row and the count drifts away from the 40 quoted
+      in the report. If it has drifted, `run_dms.py stats` shows the count and
+      `run_dms.py delete --doc-id N --yes` removes the extras
 - [ ] Live-upload receipt chosen, and run **3 times** on this machine
 - [ ] All four searches tried on this machine
 - [ ] Laptop plugged in, sleep disabled, notifications off

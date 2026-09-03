@@ -48,8 +48,13 @@ CREATE TABLE IF NOT EXISTS entities (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     doc_id     INTEGER NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
     type       TEXT NOT NULL,
-    value      TEXT NOT NULL,
-    value_norm TEXT NOT NULL,
+    -- NULL means the type was looked for and is not present on this receipt.
+    -- It is deliberately distinct from '', which would be an empty value that
+    -- *was* extracted. Retrieval treats NULL as inert: it never equals or
+    -- matches anything, and the paths that select by type instead of by value
+    -- exclude it explicitly.
+    value      TEXT,
+    value_norm TEXT,
     text       TEXT,
     start      INTEGER DEFAULT -1,
     end        INTEGER DEFAULT -1,
@@ -123,9 +128,45 @@ class ReceiptDB:
         for column, ddl in [("tokens_json", "TEXT DEFAULT '[]'")]:
             if column not in have:
                 self.conn.execute(f"ALTER TABLE documents ADD COLUMN {column} {ddl}")
-        have = {r["name"] for r in self.conn.execute("PRAGMA table_info(entities)")}
+        info = list(self.conn.execute("PRAGMA table_info(entities)"))
+        have = {r["name"] for r in info}
         if "embedding" not in have:
             self.conn.execute("ALTER TABLE entities ADD COLUMN embedding BLOB")
+
+        # Absent entities are stored with a NULL value, which an older schema
+        # forbids. SQLite has no "DROP NOT NULL", so the table is rebuilt in
+        # place - the standard twelve-step dance, minus the steps that only
+        # matter when the schema shape changes.
+        if any(r["name"] == "value" and r["notnull"] for r in info):
+            self.conn.executescript("""
+                PRAGMA foreign_keys=off;
+                BEGIN;
+                CREATE TABLE entities_new (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    doc_id     INTEGER NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+                    type       TEXT NOT NULL,
+                    value      TEXT,
+                    value_norm TEXT,
+                    text       TEXT,
+                    start      INTEGER DEFAULT -1,
+                    end        INTEGER DEFAULT -1,
+                    confidence REAL DEFAULT 0,
+                    source     TEXT,
+                    meta_json  TEXT DEFAULT '{}',
+                    embedding  BLOB
+                );
+                INSERT INTO entities_new
+                    SELECT id, doc_id, type, value, value_norm, text, start, end,
+                           confidence, source, meta_json, embedding FROM entities;
+                DROP TABLE entities;
+                ALTER TABLE entities_new RENAME TO entities;
+                COMMIT;
+                PRAGMA foreign_keys=on;
+            """)
+            self.conn.executescript(
+                "CREATE INDEX IF NOT EXISTS idx_entities_doc ON entities(doc_id);"
+                "CREATE INDEX IF NOT EXISTS idx_entities_type ON entities(type);"
+                "CREATE INDEX IF NOT EXISTS idx_entities_norm ON entities(value_norm);")
         self.conn.commit()
 
     # ------------------------------------------------------------------
@@ -182,7 +223,7 @@ class ReceiptDB:
 
     def _embed_entities(self, embedder, entity_ids, batch_size) -> int:
         types = ",".join("?" * len(SEMANTIC_TYPES))
-        sql = (f"SELECT id, value FROM entities WHERE embedding IS NULL "
+        sql = (f"SELECT id, value FROM entities WHERE embedding IS NULL AND value IS NOT NULL "
                f"AND type IN ({types})")
         params: tuple = tuple(sorted(SEMANTIC_TYPES))
         if entity_ids:
@@ -341,6 +382,30 @@ class ReceiptDB:
                     "INSERT INTO entities_fts(rowid, value, text) VALUES (?,?,?)",
                     (cur.lastrowid, ent.value, ent.text or ""),
                 )
+        # Every scalar entity type that this receipt did not carry is recorded
+        # too, with a NULL value and source "absent". The document view can then
+        # answer "was PAID looked for on this receipt?" - which a table holding
+        # only successes cannot.
+        #
+        # These rows are deliberately inert everywhere else: NULL never matches
+        # an equality or LIKE test, so the exact and substring stages skip them
+        # for free, and the stages that select by *type* rather than by value -
+        # the place-name fallback, the candidate list, the embedding queue - are
+        # each guarded explicitly. stats() reports them separately so the entity
+        # count still means "entities extracted".
+        from dms.ner import SCALAR_FIELDS
+        present = {e.type for e in doc.entities}
+        for etype in SCALAR_FIELDS:
+            if etype in present:
+                continue
+            cur.execute(
+                """INSERT INTO entities
+                   (doc_id, type, value, value_norm, text, start, end,
+                    confidence, source, meta_json)
+                   VALUES (?,?,NULL,NULL,'',-1,-1,0.0,'absent','{}')""",
+                (doc_id, etype),
+            )
+
         if self.has_fts:
             cur.execute("INSERT INTO documents_fts(rowid, ocr_text) VALUES (?,?)",
                         (doc_id, doc.ocr_text))
@@ -386,7 +451,10 @@ class ReceiptDB:
 
     def get_entities(self, doc_id: int) -> list[dict]:
         rows = self.conn.execute(
-            "SELECT * FROM entities WHERE doc_id = ? ORDER BY start", (doc_id,)
+            # Absent rows carry start=-1, so ordering by position alone would put
+            # them first. What was found comes first; what is missing follows.
+            "SELECT * FROM entities WHERE doc_id = ? "
+            "ORDER BY (value IS NULL), start", (doc_id,)
         ).fetchall()
         out = []
         for r in rows:
@@ -408,10 +476,12 @@ class ReceiptDB:
         return out
 
     def distinct_values(self, etype: str | None = None) -> list[tuple[str, str]]:
-        sql = "SELECT DISTINCT type, value FROM entities"
+        # Absent-entity rows carry a NULL value and must never be offered as
+        # something a query could resemble.
+        sql = "SELECT DISTINCT type, value FROM entities WHERE value IS NOT NULL"
         params: tuple = ()
         if etype:
-            sql += " WHERE type = ?"
+            sql += " AND type = ?"
             params = (etype,)
         return [(r["type"], r["value"]) for r in self.conn.execute(sql, params)]
 
@@ -419,9 +489,16 @@ class ReceiptDB:
         c = self.conn.execute
         return {
             "documents": c("SELECT COUNT(*) n FROM documents").fetchone()["n"],
-            "entities": c("SELECT COUNT(*) n FROM entities").fetchone()["n"],
+            # "entities" counts what was actually extracted. The rows recording
+            # a type as absent are reported separately, so this number keeps
+            # meaning the same thing it did before they existed.
+            "entities": c("SELECT COUNT(*) n FROM entities "
+                          "WHERE value IS NOT NULL").fetchone()["n"],
+            "absent": c("SELECT COUNT(*) n FROM entities "
+                        "WHERE value IS NULL").fetchone()["n"],
             "by_type": {r["type"]: r["n"] for r in c(
-                "SELECT type, COUNT(*) n FROM entities GROUP BY type ORDER BY n DESC")},
+                "SELECT type, COUNT(*) n FROM entities WHERE value IS NOT NULL "
+                "GROUP BY type ORDER BY n DESC")},
             "fts": self.has_fts,
             "path": str(self.path),
         }
@@ -545,7 +622,7 @@ class ReceiptDB:
             types = [etype] if etype else sorted(LOCATION_TYPES)
             placeholders = ",".join("?" * len(types))
             rows = self.conn.execute(
-                base + f"WHERE e.type IN ({placeholders}) "
+                base + f"WHERE e.type IN ({placeholders}) AND e.value IS NOT NULL "
                 "ORDER BY CASE e.type WHEN 'ADDRESS' THEN 0 ELSE 1 END, "
                 "e.confidence DESC LIMIT ?", (*types, limit)).fetchall()
             if rows:

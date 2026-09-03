@@ -386,7 +386,10 @@ def cmd_show(args) -> int:
         print(f"  {'TYPE':<16}{'VALUE':<38}{'CONF':>6}  {'SOURCE':<10}{'BBOX'}")
         for e in doc["entities"]:
             bbox = e["meta"].get("bbox")
-            print(f"  {e['type']:<16}{str(e['value'])[:36]:<38}{e['confidence']:>6.2f}  "
+            # A NULL value is not a failure to display; it is the record saying
+            # this type was looked for and is not on the receipt.
+            value = "-  null" if e["value"] is None else str(e["value"])[:36]
+            print(f"  {e['type']:<16}{value:<38}{e['confidence']:>6.2f}  "
                   f"{str(e['source']):<10}{bbox if bbox else '-'}")
 
         _rule("HIGHLIGHTED TEXT")

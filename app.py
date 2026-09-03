@@ -426,13 +426,19 @@ def page_database() -> None:
     db = get_db()
     stats = db.stats()
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Documents", stats["documents"])
-    c2.metric("Entities", stats["entities"])
-    c3.metric("Full-text search", "on" if stats["fts"] else "off")
+    c2.metric("Entities extracted", stats["entities"])
+    c3.metric("Recorded absent", stats.get("absent", 0),
+              help="Every scalar entity type a receipt does not carry is still "
+                   "stored, with a null value. That is what lets the system say "
+                   "'this receipt prints no cashier' rather than staying silent, "
+                   "which would be indistinguishable from never having looked. "
+                   "These rows are inert in search: a null matches nothing.")
+    c4.metric("Full-text search", "on" if stats["fts"] else "off")
     embedded = db.conn.execute(
         "SELECT COUNT(*) n FROM entities WHERE embedding IS NOT NULL").fetchone()["n"]
-    c4.metric("Vectors", embedded)
+    c5.metric("Vectors", embedded)
 
     if stats["documents"] == 0:
         st.info("Nothing stored yet.")
