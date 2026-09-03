@@ -561,7 +561,8 @@ receipt, nor ground-truth bounding boxes. Consequently:
 |---|---|---|
 | Field exact-match accuracy | ✅ | Directly computable from the four annotations |
 | Field fuzzy-match accuracy | ✅ | The ground truth contains OCR-era typos; fuzzy match is fairer |
-| Coverage ("found") | ✅ | How often the field was populated at all — a recall proxy |
+| **Precision, recall, F1** | ✅ | The standard measures for entity extraction; see §5.1.1 |
+| Coverage ("found") | ✅ | How often the field was populated at all |
 | Field recoverability (OCR ceiling) | ✅ | Introduced here; see below |
 | Recall@1, Recall@5, MRR | ✅ | Standard IR metrics for the fallback search |
 | **CER / WER** | ❌ | Requires a ground-truth transcript of every receipt; none exists |
@@ -571,6 +572,39 @@ receipt, nor ground-truth bounding boxes. Consequently:
 
 Claiming metrics that cannot be computed from the available data would be
 misleading, so they are excluded and the omission justified.
+
+#### 5.1.1 Why precision and recall, when accuracy is already reported
+
+Accuracy conflates two failures that cost differently. A field answered wrongly
+and a field not answered at all both count as "not correct", yet a wrong total
+is the more damaging of the two: a missing field is visibly missing, while a
+wrong one is silently believed.
+
+Each field is a single-valued slot, so the counts follow the usual slot-filling
+convention. A value asserted where the truth differs is charged twice — once as
+a false positive for asserting something untrue, once as a false negative for
+failing to produce the truth:
+
+| Truth | Predicted | Counted as |
+|---|---|---|
+| present | present, matching | TP |
+| present | present, not matching | FP **and** FN |
+| present | absent | FN |
+| absent | present | FP |
+| absent | absent | true negative, counted by neither |
+
+Then `precision = TP/(TP+FP)`, `recall = TP/(TP+FN)`, and F1 their harmonic
+mean. Both a micro average (pooling the counts, so commoner fields weigh more)
+and a macro average (the mean of the per-field scores, so every field weighs the
+same) are reported, because they answer different questions.
+
+**One consequence is worth stating before a reader notices it and doubts the
+implementation.** Where a configuration answers on every receipt, every error is
+simultaneously a false positive and a false negative, so precision, recall, F1
+and exact-match accuracy all collapse to the same number. That is why several
+rows in §5.4 show four identical figures. The measures separate only where a
+system *declines to answer* — which is exactly where the interesting behaviour
+is, and precisely what accuracy alone cannot show.
 
 **Field recoverability** is introduced in place of CER/WER. It measures, of the
 four annotated values, how many survive OCR well enough to be located in its
@@ -704,6 +738,40 @@ Four observations, and the first is uncomfortable:
    The configuration was left unchanged after the test split was scored: revising
    it now, in the light of a test result, would reintroduce exactly the leakage
    §5.3 exists to eliminate. It is reported rather than concealed.
+
+#### Precision, recall and F1
+
+The same 97 test receipts, scored as §5.1.1 describes. Micro-averaged, with the
+per-field detail beneath:
+
+| Configuration | Precision | Recall | **F1** |
+|---|---|---|---|
+| **Rules only** | **66.9%** | 63.8% | **65.3%** |
+| LLM only | 52.2% | 52.2% | 52.2% |
+| Hybrid (shipped) | 64.2% | 63.6% | 63.9% |
+
+| Field | Rules P / R / F1 | Hybrid P / R / F1 |
+|---|---|---|
+| company | 58.8 / 58.8 / 58.8 | 58.8 / 58.8 / 58.8 |
+| date | **88.2** / 77.3 / **82.4** | 80.4 / **80.4** / 80.4 |
+| address | **41.7 / 41.7 / 41.7** | 36.5 / 36.5 / 36.5 |
+| total | 82.4 / 77.3 / 79.8 | 81.7 / **78.4** / **80.0** |
+
+**`date` is the row that justifies computing these at all.** The rule layer is
+markedly *more precise* — 88.2% against 80.4% — because it only commits to a
+date when it finds one it recognises, and it recognises one on 87.6% of
+receipts. The hybrid commits on 100%, which costs it precision and buys it
+recall: 80.4% against 77.3%. Accuracy alone reports a single number for that
+trade and cannot say which way it went.
+
+Elsewhere the two collapse together, for the reason given in §5.1.1: both
+configurations answer on every receipt for `company` and `address`, so every
+error is both a false positive and a false negative and all four measures
+coincide.
+
+**F1 agrees with exact match about the ranking.** The rule layer leads the
+hybrid, 65.3% against 63.9%, and the language model alone is far behind at
+52.2%. That the two independent framings agree is worth more than either alone.
 
 **The honest summary** is that the language model has ceased to be an accuracy
 win and become a robustness win — better fuzzy quality, better coverage, no

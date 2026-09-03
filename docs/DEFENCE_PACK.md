@@ -238,6 +238,43 @@ things meaning similar things sit close together. Searching by meaning = embed t
 query, compare by cosine similarity. It's how `nasi ayam` finds `Chicken Rice`
 when they share no letters.
 
+**Q: How is your evaluation metric calculated?**
+
+Four annotated fields — company, date, address, total. For each, three things:
+
+> **Exact** is not string equality. `total` is compared as a *number*, so 84.80
+> matches 84.8. `date` is normalised, so 2018-03-10 matches 10/03/2018.
+> `company` and `address` are lowercased with punctuation stripped before
+> comparing. **Fuzzy** additionally accepts a similarity of 0.85 or better.
+> **Coverage** is how often the field was extracted at all.
+>
+> The headline pools every field judgement — 246 correct out of 387 labelled,
+> so 63.6%. That is a *micro* average, not a macro one; here they agree to 0.1
+> because the four fields are labelled almost equally often.
+
+**Q: Why not precision, recall and F1?** *(we do report them)*
+
+> We do. Accuracy conflates answering wrongly with not answering, and those cost
+> differently — a missing field is visibly missing, a wrong one is silently
+> believed. Micro-averaged: rules 66.9 / 63.8 / **65.3**, hybrid 64.2 / 63.6 /
+> **63.9**, model alone 52.2 across the board.
+
+**Q (sharp): Several of your rows show precision, recall and F1 all identical.
+Is that a bug?**
+
+No, and this is a good one to get right:
+
+> Each field is a single-valued slot. Where a configuration answers on *every*
+> receipt, every error is simultaneously a false positive — it asserted
+> something untrue — and a false negative, since it failed to produce the truth.
+> So the three measures collapse onto accuracy. They separate only where the
+> system declines to answer.
+>
+> `date` is where that shows. The rule layer only commits when it recognises a
+> date, on 87.6% of receipts, so it is *more precise* — 88.2% against 80.4% —
+> but recalls less: 77.3% against 80.4%. That is a genuine trade, and accuracy
+> reports one number for it without saying which way it went.
+
 **Q: What is FTS5?**
 SQLite's built-in full-text search extension — an inverted index for fast keyword
 lookup. We use it for the text search and our own vector table for meaning.

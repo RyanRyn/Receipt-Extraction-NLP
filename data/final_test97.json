@@ -22,7 +22,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian |, Tampoi,81200 Johor Bahru, Johor",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -39,7 +39,7 @@
       },
       {
         "company": {
-          "pred": "118 MJ MOOKATA HOUSE |",
+          "pred": "118 MJ MOOKATA HOUSE",
           "true": "118 MJ MOOKATA HOUSE",
           "exact": true,
           "fuzzy": true,
@@ -70,7 +70,7 @@
       },
       {
         "company": {
-          "pred": "UNIHAKKA INTERNATIONAL SDN BHD |",
+          "pred": "UNIHAKKA INTERNATIONAL SDN BHD",
           "true": "UNIHAKKA INTERNATIONAL SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -146,7 +146,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| NO. 9-G, JALAN PERUBATAN 2,, PANDAN INDAH, 55100 KUALA LUMPUR",
+          "pred": "NO. 9-G, JALAN PERUBATAN 2,, PANDAN INDAH, 55100 KUALA LUMPUR",
           "true": "NO. 9-G, JALAN PERUBATAN 2, PANDAN INDAH, 55100 KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -349,7 +349,7 @@
       },
       {
         "company": {
-          "pred": "| PASAR MINI JIN SENG | |",
+          "pred": "PASAR MINI JIN SENG",
           "true": "PASAR MINI JIN SENG",
           "exact": true,
           "fuzzy": true,
@@ -363,7 +363,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "379, JALAN PERMAS SATU, | |, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR",
+          "pred": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR",
           "true": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA 81750 PLENTONG, JOHOR.",
           "exact": true,
           "fuzzy": true,
@@ -456,7 +456,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| NO 290, JALAN AIR PANAS,, SETAPAK,, 53200, KUALA LUMPUR",
+          "pred": "NO 290, JALAN AIR PANAS,, SETAPAK,, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -566,7 +566,7 @@
       },
       {
         "company": {
-          "pred": "Foodelico Sdn. Bhd. (1268140-H) |",
+          "pred": "Foodelico Sdn. Bhd. (1268140-H)",
           "true": "FOODELICO SDN. BHD.",
           "exact": false,
           "fuzzy": false,
@@ -597,7 +597,7 @@
       },
       {
         "company": {
-          "pred": "* CALTEX",
+          "pred": "CALTEX",
           "true": "BIRU PETROLEUM",
           "exact": false,
           "fuzzy": false,
@@ -628,7 +628,7 @@
       },
       {
         "company": {
-          "pred": "UNIHAKKA INTERNATIONAL SDN BHD |",
+          "pred": "UNIHAKKA INTERNATIONAL SDN BHD",
           "true": "UNIHAKKA INTERNATIONAL SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -642,7 +642,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| 12, Jalan Tampoi 7/4,Kawasan Perindustrian !, Tampoi,81200 Johor Bahru, Johor",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian !, Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -890,7 +890,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "3RD FLR, AEON TAMAN MALURI SC, JLN JEJAKA, TAMAN MALURI |, CHERAS, 55100 KUALA LUMPUR | |",
+          "pred": "3RD FLR, AEON TAMAN MALURI SC, JLN JEJAKA, TAMAN MALURI CHERAS, 55100 KUALA LUMPUR",
           "true": "3RD FLR, AEON TAMAN MALURI SC JLN JEJAKA, TAMAN MALURI CHERAS, 55100 KUALA LUMPUR",
           "exact": true,
           "fuzzy": true,
@@ -921,7 +921,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO. 12. & 14, JALAN JINJANG 27/54 3, ALAM MEGAH, SEKSYEN 27, : 0400 SHAH ALAM, SELANGOR D. E. * By",
+          "pred": "NO. 12. & 14, JALAN JINJANG 27/54 3, ALAM MEGAH, SEKSYEN 27, : 0400 SHAH ALAM, SELANGOR D. E. By",
           "true": "NO. 12 & 14, JALAN JINJANG 27/54 TAMAN ALAM MEGAH, SEKSYEN 27 40400 SHAH ALAM, SELANGOR D. E.",
           "exact": false,
           "fuzzy": true,
@@ -938,7 +938,7 @@
       },
       {
         "company": {
-          "pred": "* Say STATIONERY",
+          "pred": "Say STATIONERY",
           "true": "S&Y STATIONERY",
           "exact": false,
           "fuzzy": true,
@@ -1231,7 +1231,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| LOT 276 JALAN BANTING, | 43800 DENGKIL, SELANGOR",
+          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -1341,7 +1341,7 @@
       },
       {
         "company": {
-          "pred": "JALAN UDANG SIAR 2, |",
+          "pred": "JALAN UDANG SIAR 2",
           "true": "YIN MA (M) SDN.BHD.",
           "exact": false,
           "fuzzy": false,
@@ -1510,7 +1510,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "_ No.2, Jalan Temenggung 19/9,, Seksyen 9, Bandar Mahkota Cheras,, 43200 Cheras Selangor",
+          "pred": "No.2, Jalan Temenggung 19/9,, Seksyen 9, Bandar Mahkota Cheras,, 43200 Cheras Selangor",
           "true": "NO.2, JALAN TEMENGGUNG 19/9, SEKSYEN 9, BANDAR MAHKOTA CHERAS, 43200 CHERAS, SELANGOR",
           "exact": true,
           "fuzzy": true,
@@ -1713,7 +1713,7 @@
       },
       {
         "company": {
-          "pred": "TRE SHAAS SDN BHD (728515-H) |",
+          "pred": "TRE SHAAS SDN BHD (728515-H)",
           "true": "TRI SHAAS SDN BHD",
           "exact": false,
           "fuzzy": false,
@@ -1727,7 +1727,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "4-20, Jalan Ria 25/62 Taman Sri Nuda |, é Seksyen 25, 40400 Shah Alam Selangor",
+          "pred": "4-20, Jalan Ria 25/62 Taman Sri Nuda é Seksyen 25, 40400 Shah Alam Selangor",
           "true": "4-20, JALAN RIA 25/62 TAMAN SRI MUDA SEKSYEN 25, 40400 SHAH ALAM SELANGOR",
           "exact": false,
           "fuzzy": true,
@@ -1806,7 +1806,7 @@
       },
       {
         "company": {
-          "pred": "| DNA SS",
+          "pred": "DNA SS",
           "true": "DEWINA HOST SDN BHD",
           "exact": false,
           "fuzzy": false,
@@ -1851,7 +1851,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| | No. 33, Jalan Harmonium, Taman Desa Tebrau -, 81100 Johor Bahru |",
+          "pred": "No. 33, Jalan Harmonium, Taman Desa Tebrau -, 81100 Johor Bahru",
           "true": "NO. 33, JALAN HARMONIUM TAMAN DESA TEBRAU 81100 JOHOR BAHRU",
           "exact": true,
           "fuzzy": true,
@@ -2037,7 +2037,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian ., . Tampoi,81200 Johor Bahru, Johor |",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian ., . Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -2068,7 +2068,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR. |",
+          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR",
           "exact": true,
           "fuzzy": true,
@@ -2316,7 +2316,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "88 10, Jalan Ijok Permai 4, |",
+          "pred": "88 10, Jalan Ijok Permai 4",
           "true": "8 & 10, JALAN IJOK PERMAI 1, PUSAT NIAGA IJOK PERMAI, 48000 IJOK, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -2378,7 +2378,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan ., 40300 Shah Alam, Selangor. |",
+          "pred": "Lot 3, Jalan ., 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -2409,7 +2409,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "|",
+          "pred": "(65351-M) |",
           "true": "LEVEL 6, BANGUNAN TH, DAMANSARA UPTOWN3 NO.3, JALAN SS21/39, 47400 PETALING JAYA SELANGOR",
           "exact": false,
           "fuzzy": false,
@@ -2533,7 +2533,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO.1, TAMAN SRI DENGKIL, JALAN AIR HITAM, | 43800 DENGKIL, SELANGOR",
+          "pred": "NO.1, TAMAN SRI DENGKIL, JALAN AIR HITAM, 43800 DENGKIL, SELANGOR",
           "true": "NO. 1, TAMAN SRI DENGKIL, JALAN AIR HITAM 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -2550,7 +2550,7 @@
       },
       {
         "company": {
-          "pred": "| Gerbang Alaf Restaurants Sdn Bhd",
+          "pred": "Gerbang Alaf Restaurants Sdn Bhd",
           "true": "GERBANG ALAF RESTAURANTS SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -2643,7 +2643,7 @@
       },
       {
         "company": {
-          "pred": "_ GARDENIA BAKERIES (KL) SDN BHD",
+          "pred": "GARDENIA BAKERIES (KL) SDN BHD",
           "true": "GARDENIA BAKERIES (KL) SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -2967,7 +2967,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian |, | Tampoi,81200 Johor Bahru, Johor",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -3062,7 +3062,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO.7G, Jalan Permas 11,Bandar Baru Permas Jaya,81750 Masai,Johor.",
+          "pred": "NO.7G, Jalan Permas 11,Bandar Baru Permas Jaya,81750 Masai,Johor",
           "true": "NO.7G,JALAN PERMAS 11, BANDAR BARU PERMAS JAYA, 81750 MASAI, JOHOR.",
           "exact": true,
           "fuzzy": true,
@@ -3093,7 +3093,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "- Tampoi,81200 Johor Bahru, Johor",
+          "pred": "Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": false,
           "fuzzy": false,
@@ -3155,7 +3155,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO. 9-G, JALAN PERUBATAN 2, PANDAN INDAH, 55100 KUALA LUMPUR.",
+          "pred": "NO. 9-G, JALAN PERUBATAN 2, PANDAN INDAH, 55100 KUALA LUMPUR",
           "true": "NO. 9-G, JALAN PERUBATAN 2, PANDAN INDAH, 55100 KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -3186,7 +3186,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "LOT NO. G23, GIANT KELANA JAYA | LOT PT244, JLN FERBANDARAN 556/4, PUSAT BANDAR KELANA JAYA, FETALING",
+          "pred": "LOT NO. G23, GIANT KELANA JAYA LOT PT244, JLN FERBANDARAN 556/4, PUSAT BANDAR KELANA JAYA, FETALING",
           "true": "LOT NO. G23, GIANT KELANA JAYA LOT PT244, JLN PERBANDARAN SS6/4 PUSAT BANDAR KELANA JAYA, PETALING",
           "exact": false,
           "fuzzy": true,
@@ -3217,7 +3217,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR.",
+          "pred": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR",
           "true": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -3372,7 +3372,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR.",
+          "pred": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR",
           "true": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA 81750 PLENTONG, JOHOR.",
           "exact": true,
           "fuzzy": true,
@@ -3465,7 +3465,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
+          "pred": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -3527,7 +3527,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -3575,7 +3575,7 @@
       },
       {
         "company": {
-          "pred": "FOODELICO Sdn. Bhd.",
+          "pred": "FOODELICO Sdn. Bhd",
           "true": "FOODELICO SDN. BHD.",
           "exact": true,
           "fuzzy": true,
@@ -3620,7 +3620,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "KELANA JAYA. 47301 PETALING, SELANGOR DARUL EHSAN.",
+          "pred": "KELANA JAYA. 47301 PETALING, SELANGOR DARUL EHSAN",
           "true": "KELANA JAYA. 47301 PETALING SELANGOR DARUL EHSAN.",
           "exact": true,
           "fuzzy": true,
@@ -3775,7 +3775,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot3, 23/1, 40300 Shah 'Alfa, Selangor.",
+          "pred": "Lot3, 23/1, 40300 Shah 'Alfa, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -3806,7 +3806,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -3837,7 +3837,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 2441, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 2441, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": true,
@@ -3930,7 +3930,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "4d Eat -—— (EDAI BUKU NEW ACHEIVERS a. AN (CO NO. SA0345444-K) ' ' NO. 12. & 14, JALAN JINJANG 27/54 3 ALAM MEGAH, SEKSYEN 27 : 0400 SHAH ALAM, SELANGOR D. E.",
+          "pred": "4d Eat -—— (EDAI BUKU NEW ACHEIVERS a. AN (CO NO. SA0345444-K) ' ' NO. 12. & 14, JALAN JINJANG 27/54 3 ALAM MEGAH, SEKSYEN 27 : 0400 SHAH ALAM, SELANGOR D. E",
           "true": "NO. 12 & 14, JALAN JINJANG 27/54 TAMAN ALAM MEGAH, SEKSYEN 27 40400 SHAH ALAM, SELANGOR D. E.",
           "exact": false,
           "fuzzy": false,
@@ -4023,7 +4023,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
+          "pred": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -4085,7 +4085,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "989625-A — NO 18, 20, 22, JALAN BUNGA TANJONG 2/16, D 40000 SHAH ALAM, SELANGOR",
+          "pred": "989625-A NO 18, 20, 22, JALAN BUNGA TANJONG 2/16, D 40000 SHAH ALAM, SELANGOR",
           "true": "NO 18, 20, 22, JALAN BUNGA TANJONG 2/16, 40000 SHAH ALAM, SELANGOR",
           "exact": false,
           "fuzzy": true,
@@ -4116,7 +4116,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR.",
+          "pred": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR",
           "true": "NO 37, JALAN MANIS 7, TAMAN SEGAR, 56100 CHERAS, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -4133,7 +4133,7 @@
       },
       {
         "company": {
-          "pred": "ONE ONE THREE SEAFOOD RESTAURANT SDN Li.",
+          "pred": "ONE ONE THREE SEAFOOD RESTAURANT SDN Li",
           "true": "ONE ONE THREE SEAFOOD RESTAURANT SDN BHD",
           "exact": false,
           "fuzzy": true,
@@ -4240,7 +4240,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| LOT 276 JALAN BANTING | 43800 DENGKIL, SELANGOR.",
+          "pred": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -4271,7 +4271,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "(PLAT MART ) 752173-W, JALAN LUMPUR, OFF JALAN PUTRA, 05100 ALOR SETAR, KEDAH.",
+          "pred": "(PLAT MART ) 752173-W, JALAN LUMPUR, OFF JALAN PUTRA, 05100 ALOR SETAR, KEDAH",
           "true": "8B, JALAN LUMPUR,OFF JALAN PUTRA,05100 ALOR SETAR,KEDAH,",
           "exact": false,
           "fuzzy": false,
@@ -4302,7 +4302,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "67,JLN MEWAH 25/63 THN SRI MUDA, 40400 SHAH ALAM.",
+          "pred": "67,JLN MEWAH 25/63 THN SRI MUDA, 40400 SHAH ALAM",
           "true": "67,JLN MEWAH 25/63 TMN SRI MUDA, 40400 SHAH ALAM.",
           "exact": false,
           "fuzzy": true,
@@ -4364,7 +4364,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "JALAN UDANG SIAR 2, | srr cs eee 52000 KUALA LUMPUR.",
+          "pred": "JALAN UDANG SIAR 2, srr cs eee 52000 KUALA LUMPUR",
           "true": "NO.2, JALAN UDANG SIAR 2, TAMAN SRI SEGAMBUT, 52000 KUALA LUMPUR.",
           "exact": false,
           "fuzzy": false,
@@ -4395,7 +4395,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jala Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jala Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": true,
@@ -4457,7 +4457,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "No 7, Simpang Off Batu Village,Jalan Ipoh Batu 5, 51200 Kuala Lumpur.",
+          "pred": "No 7, Simpang Off Batu Village,Jalan Ipoh Batu 5, 51200 Kuala Lumpur",
           "true": "NO 7, SIMPANG OFF BATU VILLAGE, JALAN IPOH BATU 5, 51200 KUALA LUMPUR. MALAYSIA",
           "exact": false,
           "fuzzy": true,
@@ -4550,7 +4550,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "'NO. 31G&33G, JALAN SETIA INDAH X ,U13/X",
+          "pred": "NO. 31G&33G, JALAN SETIA INDAH X ,U13/X",
           "true": "NO. 31G&33G, JALAN SETIA INDAH X ,U13/X 40170 SETIA ALAM",
           "exact": false,
           "fuzzy": false,
@@ -4612,7 +4612,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "95, Beach Road, 10300 Penang.",
+          "pred": "95, Beach Road, 10300 Penang",
           "true": "95, BEACH ROAD, 10300 PENANG. 10400 PENANG.",
           "exact": false,
           "fuzzy": false,
@@ -4643,7 +4643,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -5001,7 +5001,7 @@
       },
       {
         "company": {
-          "pred": "aan Ln < Sep",
+          "pred": "aan Ln Sep",
           "true": "S&Y STATIONERY",
           "exact": false,
           "fuzzy": false,
@@ -5015,7 +5015,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "ie SN, SRY STATIONERY (002050590-H) NO. 36G JALAN BULAN BM US/BM BANDAR PINGGIRAN SUBANG, SEKSYEN US, 40150 SHAH ALAM, SELANGOR.",
+          "pred": "ie SN, SRY STATIONERY (002050590-H) NO. 36G JALAN BULAN BM US/BM BANDAR PINGGIRAN SUBANG, SEKSYEN US, 40150 SHAH ALAM, SELANGOR",
           "true": "NO. 36G JALAN BULAN BM U5/BM, BANDAR PINGGIRAN SUBANG, SEKSYEN U5, 40150 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -5139,7 +5139,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "379, JALAN PERMAS SATU,BANDAR BARU PERMAS JAYA,61750 PLENTONG,JOHOR.",
+          "pred": "379, JALAN PERMAS SATU,BANDAR BARU PERMAS JAYA,61750 PLENTONG,JOHOR",
           "true": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA 81750 PLENTONG, JOHOR.",
           "exact": false,
           "fuzzy": true,
@@ -5263,7 +5263,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -5294,7 +5294,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot B-005-006. Basement Level 1, The Starling Mall, Jalan 5521/60. Damansara Utama.",
+          "pred": "Lot B-005-006. Basement Level 1, The Starling Mall, Jalan 5521/60. Damansara Utama",
           "true": "LOT B-005-006, BASEMENT LEVEL 1 THE STARLING MALL JALAN SS21/60, DAMANSARA UTAMA.",
           "exact": false,
           "fuzzy": true,
@@ -5325,7 +5325,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "88 10, Jalan Ijok Permai 4, Pusat Niaga Ijok Permai, 48000 Ijok, selangor.",
+          "pred": "88 10, Jalan Ijok Permai 4, Pusat Niaga Ijok Permai, 48000 Ijok, selangor",
           "true": "8 & 10, JALAN IJOK PERMAI 1, PUSAT NIAGA IJOK PERMAI, 48000 IJOK, SELANGOR.",
           "exact": false,
           "fuzzy": true,
@@ -5387,7 +5387,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan , 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan , 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -5480,7 +5480,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "No.5 & 7 . Jalan TS) a.",
+          "pred": "No.5 & 7 . Jalan TS) a",
           "true": "NO.5 & 7 , JALAN TSJ 2. TAMAN SUBANG JASA KG. BARU SUBANG. 40150 SHAH ALAM SELANGOR DARUL EHSAN",
           "exact": false,
           "fuzzy": false,
@@ -5635,7 +5635,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "(81109-A), NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
+          "pred": "(81109-A), NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": false,
           "fuzzy": true,
@@ -5666,7 +5666,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jalan Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -5697,7 +5697,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR.",
+          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -5728,7 +5728,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "No. 76, Jalan SS15/4B, 47500 Subang Jaya, Selangor D.E.",
+          "pred": "No. 76, Jalan SS15/4B, 47500 Subang Jaya, Selangor D.E",
           "true": "NO. 76, JALAN SS15/4B, 47500 SUBANG JAYA, SELANGOR D.E.",
           "exact": true,
           "fuzzy": true,
@@ -6007,7 +6007,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "bi NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
+          "pred": "bi NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": false,
           "fuzzy": true,
@@ -6057,7 +6057,7 @@
       },
       {
         "company": {
-          "pred": "118 MJ MOOKATA HOUSE |",
+          "pred": "118 MJ MOOKATA HOUSE",
           "true": "118 MJ MOOKATA HOUSE",
           "exact": true,
           "fuzzy": true,
@@ -6071,7 +6071,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO.7G, Jalan Permas 11,Bandar Baru Permas Jaya,81750 Masai,Johor.",
+          "pred": "NO.7G, Jalan Permas 11,Bandar Baru Permas Jaya,81750 Masai,Johor",
           "true": "NO.7G,JALAN PERMAS 11, BANDAR BARU PERMAS JAYA, 81750 MASAI, JOHOR.",
           "exact": true,
           "fuzzy": true,
@@ -6088,7 +6088,7 @@
       },
       {
         "company": {
-          "pred": "UNIHAKKA INTERNATIONAL SDN BHD |",
+          "pred": "UNIHAKKA INTERNATIONAL SDN BHD",
           "true": "UNIHAKKA INTERNATIONAL SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -6102,7 +6102,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "- Tampoi,81200 Johor Bahru, Johor",
+          "pred": "Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": false,
           "fuzzy": false,
@@ -6164,7 +6164,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| NO. 9-G, JALAN PERUBATAN 2,, PANDAN INDAH, 55100 KUALA LUMPUR",
+          "pred": "NO. 9-G, JALAN PERUBATAN 2,, PANDAN INDAH, 55100 KUALA LUMPUR",
           "true": "NO. 9-G, JALAN PERUBATAN 2, PANDAN INDAH, 55100 KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -6195,7 +6195,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "LOT NO. G23, GIANT KELANA JAYA | LOT PT244, JLN FERBANDARAN 556/4, PUSAT BANDAR KELANA JAYA, FETALING",
+          "pred": "LOT NO. G23, GIANT KELANA JAYA LOT PT244, JLN FERBANDARAN 556/4, PUSAT BANDAR KELANA JAYA, FETALING",
           "true": "LOT NO. G23, GIANT KELANA JAYA LOT PT244, JLN PERBANDARAN SS6/4 PUSAT BANDAR KELANA JAYA, PETALING",
           "exact": false,
           "fuzzy": true,
@@ -6367,7 +6367,7 @@
       },
       {
         "company": {
-          "pred": "| PASAR MINI JIN SENG | |",
+          "pred": "PASAR MINI JIN SENG",
           "true": "PASAR MINI JIN SENG",
           "exact": true,
           "fuzzy": true,
@@ -6381,7 +6381,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "379, JALAN PERMAS SATU, | |, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR",
+          "pred": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA, 81750 PLENTONG, JOHOR",
           "true": "379, JALAN PERMAS SATU, BANDAR BARU PERMAS JAYA 81750 PLENTONG, JOHOR.",
           "exact": true,
           "fuzzy": true,
@@ -6474,7 +6474,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| NO 290, JALAN AIR PANAS,, SETAPAK,, 53200, KUALA LUMPUR",
+          "pred": "NO 290, JALAN AIR PANAS,, SETAPAK,, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": true,
           "fuzzy": true,
@@ -6584,7 +6584,7 @@
       },
       {
         "company": {
-          "pred": "Foodelico Sdn. Bhd. (1268140-H) |",
+          "pred": "Foodelico Sdn. Bhd. (1268140-H)",
           "true": "FOODELICO SDN. BHD.",
           "exact": false,
           "fuzzy": false,
@@ -6615,7 +6615,7 @@
       },
       {
         "company": {
-          "pred": "* CALTEX",
+          "pred": "CALTEX",
           "true": "BIRU PETROLEUM",
           "exact": false,
           "fuzzy": false,
@@ -6646,7 +6646,7 @@
       },
       {
         "company": {
-          "pred": "UNIHAKKA INTERNATIONAL SDN BHD |",
+          "pred": "UNIHAKKA INTERNATIONAL SDN BHD",
           "true": "UNIHAKKA INTERNATIONAL SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -6660,7 +6660,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| 12, Jalan Tampoi 7/4,Kawasan Perindustrian !, Tampoi,81200 Johor Bahru, Johor",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian !, Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -6784,7 +6784,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot3, 23/1, 40300 Shah 'Alfa, Selangor.",
+          "pred": "Lot3, 23/1, 40300 Shah 'Alfa, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -6908,7 +6908,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "3RD FLR, AEON TAMAN MALURI SC, JLN JEJAKA, TAMAN MALURI |, CHERAS, 55100 KUALA LUMPUR | |",
+          "pred": "3RD FLR, AEON TAMAN MALURI SC, JLN JEJAKA, TAMAN MALURI CHERAS, 55100 KUALA LUMPUR",
           "true": "3RD FLR, AEON TAMAN MALURI SC JLN JEJAKA, TAMAN MALURI CHERAS, 55100 KUALA LUMPUR",
           "exact": true,
           "fuzzy": true,
@@ -6939,7 +6939,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "4d Eat -—— (EDAI BUKU NEW ACHEIVERS a. AN (CO NO. SA0345444-K) ' ' NO. 12. & 14, JALAN JINJANG 27/54 3 ALAM MEGAH, SEKSYEN 27 : 0400 SHAH ALAM, SELANGOR D. E.",
+          "pred": "4d Eat -—— (EDAI BUKU NEW ACHEIVERS a. AN (CO NO. SA0345444-K) ' ' NO. 12. & 14, JALAN JINJANG 27/54 3 ALAM MEGAH, SEKSYEN 27 : 0400 SHAH ALAM, SELANGOR D. E",
           "true": "NO. 12 & 14, JALAN JINJANG 27/54 TAMAN ALAM MEGAH, SEKSYEN 27 40400 SHAH ALAM, SELANGOR D. E.",
           "exact": false,
           "fuzzy": false,
@@ -6956,7 +6956,7 @@
       },
       {
         "company": {
-          "pred": "* Say STATIONERY",
+          "pred": "Say STATIONERY",
           "true": "S&Y STATIONERY",
           "exact": false,
           "fuzzy": true,
@@ -7249,7 +7249,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| LOT 276 JALAN BANTING, | 43800 DENGKIL, SELANGOR",
+          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -7280,7 +7280,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "(PLAT MART ) 752173-W, JALAN LUMPUR, OFF JALAN PUTRA, 05100 ALOR SETAR, KEDAH.",
+          "pred": "(PLAT MART ) 752173-W, JALAN LUMPUR, OFF JALAN PUTRA, 05100 ALOR SETAR, KEDAH",
           "true": "8B, JALAN LUMPUR,OFF JALAN PUTRA,05100 ALOR SETAR,KEDAH,",
           "exact": false,
           "fuzzy": false,
@@ -7359,7 +7359,7 @@
       },
       {
         "company": {
-          "pred": "JALAN UDANG SIAR 2, |",
+          "pred": "JALAN UDANG SIAR 2",
           "true": "YIN MA (M) SDN.BHD.",
           "exact": false,
           "fuzzy": false,
@@ -7373,7 +7373,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "JALAN UDANG SIAR 2, | srr cs eee 52000 KUALA LUMPUR.",
+          "pred": "JALAN UDANG SIAR 2, srr cs eee 52000 KUALA LUMPUR",
           "true": "NO.2, JALAN UDANG SIAR 2, TAMAN SRI SEGAMBUT, 52000 KUALA LUMPUR.",
           "exact": false,
           "fuzzy": false,
@@ -7404,7 +7404,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jala Pelabur 23/1, 40300 Shah Alam, Selangor.",
+          "pred": "Lot 3, Jala Pelabur 23/1, 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": true,
@@ -7528,7 +7528,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "_ No.2, Jalan Temenggung 19/9,, Seksyen 9, Bandar Mahkota Cheras,, 43200 Cheras Selangor",
+          "pred": "No.2, Jalan Temenggung 19/9,, Seksyen 9, Bandar Mahkota Cheras,, 43200 Cheras Selangor",
           "true": "NO.2, JALAN TEMENGGUNG 19/9, SEKSYEN 9, BANDAR MAHKOTA CHERAS, 43200 CHERAS, SELANGOR",
           "exact": true,
           "fuzzy": true,
@@ -7559,7 +7559,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "'NO. 31G&33G, JALAN SETIA INDAH X ,U13/X",
+          "pred": "NO. 31G&33G, JALAN SETIA INDAH X ,U13/X",
           "true": "NO. 31G&33G, JALAN SETIA INDAH X ,U13/X 40170 SETIA ALAM",
           "exact": false,
           "fuzzy": false,
@@ -7621,7 +7621,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "95, Beach Road, 10300 Penang.",
+          "pred": "95, Beach Road, 10300 Penang",
           "true": "95, BEACH ROAD, 10300 PENANG. 10400 PENANG.",
           "exact": false,
           "fuzzy": false,
@@ -7731,7 +7731,7 @@
       },
       {
         "company": {
-          "pred": "TRE SHAAS SDN BHD (728515-H) |",
+          "pred": "TRE SHAAS SDN BHD (728515-H)",
           "true": "TRI SHAAS SDN BHD",
           "exact": false,
           "fuzzy": false,
@@ -7745,7 +7745,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "4-20, Jalan Ria 25/62 Taman Sri Nuda |, é Seksyen 25, 40400 Shah Alam Selangor",
+          "pred": "4-20, Jalan Ria 25/62 Taman Sri Nuda é Seksyen 25, 40400 Shah Alam Selangor",
           "true": "4-20, JALAN RIA 25/62 TAMAN SRI MUDA SEKSYEN 25, 40400 SHAH ALAM SELANGOR",
           "exact": false,
           "fuzzy": true,
@@ -7824,7 +7824,7 @@
       },
       {
         "company": {
-          "pred": "| DNA SS",
+          "pred": "DNA SS",
           "true": "DEWINA HOST SDN BHD",
           "exact": false,
           "fuzzy": false,
@@ -7869,7 +7869,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "| | No. 33, Jalan Harmonium, Taman Desa Tebrau -, 81100 Johor Bahru |",
+          "pred": "No. 33, Jalan Harmonium, Taman Desa Tebrau -, 81100 Johor Bahru",
           "true": "NO. 33, JALAN HARMONIUM TAMAN DESA TEBRAU 81100 JOHOR BAHRU",
           "exact": true,
           "fuzzy": true,
@@ -8024,7 +8024,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "ie SN, SRY STATIONERY (002050590-H) NO. 36G JALAN BULAN BM US/BM BANDAR PINGGIRAN SUBANG, SEKSYEN US, 40150 SHAH ALAM, SELANGOR.",
+          "pred": "ie SN, SRY STATIONERY (002050590-H) NO. 36G JALAN BULAN BM US/BM BANDAR PINGGIRAN SUBANG, SEKSYEN US, 40150 SHAH ALAM, SELANGOR",
           "true": "NO. 36G JALAN BULAN BM U5/BM, BANDAR PINGGIRAN SUBANG, SEKSYEN U5, 40150 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -8055,7 +8055,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian ., . Tampoi,81200 Johor Bahru, Johor |",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian ., . Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -8086,7 +8086,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR. |",
+          "pred": "LOT 276 JALAN BANTING, 43800 DENGKIL, SELANGOR",
           "true": "LOT 276 JALAN BANTING 43800 DENGKIL, SELANGOR",
           "exact": true,
           "fuzzy": true,
@@ -8303,7 +8303,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot B-005-006. Basement Level 1, The Starling Mall, Jalan 5521/60. Damansara Utama.",
+          "pred": "Lot B-005-006. Basement Level 1, The Starling Mall, Jalan 5521/60. Damansara Utama",
           "true": "LOT B-005-006, BASEMENT LEVEL 1 THE STARLING MALL JALAN SS21/60, DAMANSARA UTAMA.",
           "exact": false,
           "fuzzy": true,
@@ -8334,7 +8334,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "88 10, Jalan Ijok Permai 4, Pusat Niaga Ijok Permai, 48000 Ijok, selangor.",
+          "pred": "88 10, Jalan Ijok Permai 4, Pusat Niaga Ijok Permai, 48000 Ijok, selangor",
           "true": "8 & 10, JALAN IJOK PERMAI 1, PUSAT NIAGA IJOK PERMAI, 48000 IJOK, SELANGOR.",
           "exact": false,
           "fuzzy": true,
@@ -8396,7 +8396,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "Lot 3, Jalan ., 40300 Shah Alam, Selangor. |",
+          "pred": "Lot 3, Jalan ., 40300 Shah Alam, Selangor",
           "true": "LOT 3, JALAN PELABUR 23/1, 40300 SHAH ALAM, SELANGOR.",
           "exact": false,
           "fuzzy": false,
@@ -8427,7 +8427,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "|",
+          "pred": "(65351-M) |",
           "true": "LEVEL 6, BANGUNAN TH, DAMANSARA UPTOWN3 NO.3, JALAN SS21/39, 47400 PETALING JAYA SELANGOR",
           "exact": false,
           "fuzzy": false,
@@ -8551,7 +8551,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "NO.1, TAMAN SRI DENGKIL, JALAN AIR HITAM, | 43800 DENGKIL, SELANGOR",
+          "pred": "NO.1, TAMAN SRI DENGKIL, JALAN AIR HITAM, 43800 DENGKIL, SELANGOR",
           "true": "NO. 1, TAMAN SRI DENGKIL, JALAN AIR HITAM 43800 DENGKIL, SELANGOR.",
           "exact": true,
           "fuzzy": true,
@@ -8568,7 +8568,7 @@
       },
       {
         "company": {
-          "pred": "| Gerbang Alaf Restaurants Sdn Bhd",
+          "pred": "Gerbang Alaf Restaurants Sdn Bhd",
           "true": "GERBANG ALAF RESTAURANTS SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -8661,7 +8661,7 @@
       },
       {
         "company": {
-          "pred": "_ GARDENIA BAKERIES (KL) SDN BHD",
+          "pred": "GARDENIA BAKERIES (KL) SDN BHD",
           "true": "GARDENIA BAKERIES (KL) SDN BHD",
           "exact": true,
           "fuzzy": true,
@@ -8985,7 +8985,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian |, | Tampoi,81200 Johor Bahru, Johor",
+          "pred": "12, Jalan Tampoi 7/4,Kawasan Perindustrian Tampoi,81200 Johor Bahru, Johor",
           "true": "12, JALAN TAMPOI 7/4,KAWASAN PERINDUSTRIAN TAMPOI,81200 JOHOR BAHRU,JOHOR",
           "exact": true,
           "fuzzy": true,
@@ -9016,7 +9016,7 @@
           "labelled": true
         },
         "address": {
-          "pred": "bi NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
+          "pred": "bi NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR",
           "true": "NO 290, JALAN AIR PANAS, SETAPAK, 53200, KUALA LUMPUR.",
           "exact": false,
           "fuzzy": true,

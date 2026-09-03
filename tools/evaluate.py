@@ -177,6 +177,16 @@ class Scoreboard:
         self.fuzzy = {f: 0 for f in FIELD_MAP}
         self.found = {f: 0 for f in FIELD_MAP}
         self.labelled = {f: 0 for f in FIELD_MAP}
+        # Slot-filling confusion counts, per field.
+        #
+        # Accuracy alone conflates two different failures: answering wrongly and
+        # not answering at all. For an extraction system those have opposite
+        # costs - a wrong total is worse than a missing one, because a missing
+        # field is visibly missing while a wrong one is silently believed - so
+        # they are counted apart.
+        self.tp = {f: 0 for f in FIELD_MAP}
+        self.fp = {f: 0 for f in FIELD_MAP}
+        self.fn = {f: 0 for f in FIELD_MAP}
         self.total = 0
         self.seconds = 0.0
 
@@ -189,12 +199,30 @@ class Scoreboard:
             if p is not None:
                 self.found[ds_field] += 1
             has_truth = t is not None and str(t).strip() != ""
+            has_pred = p is not None
             ex = fz = False
             if has_truth:
                 self.labelled[ds_field] += 1
                 ex, fz = compare(ds_field, p, t)
                 self.exact[ds_field] += ex
                 self.fuzzy[ds_field] += fz
+
+            # Standard slot-filling convention. A wrong answer is charged twice
+            # - once as a false positive for asserting something untrue, once as
+            # a false negative for failing to produce the truth - which is what
+            # makes precision and recall differ from accuracy at all.
+            if has_truth and has_pred:
+                if ex:
+                    self.tp[ds_field] += 1
+                else:
+                    self.fp[ds_field] += 1
+                    self.fn[ds_field] += 1
+            elif has_truth and not has_pred:
+                self.fn[ds_field] += 1
+            elif has_pred and not has_truth:
+                self.fp[ds_field] += 1
+            # truth absent and nothing predicted is a true negative, which
+            # neither precision nor recall counts.
             row[ds_field] = {"pred": p, "true": t, "exact": ex, "fuzzy": fz,
                              "labelled": has_truth}
         return row
@@ -220,8 +248,49 @@ class Scoreboard:
             micro_e = sum(self.exact.values()) / scored
             micro_f = sum(self.fuzzy.values()) / scored
             print(f"  {'OVERALL':<12}{micro_e:>8.1%}{micro_f:>9.1%}")
+            self.report_prf()
         else:
             print(f"  {'OVERALL':<12}{'-':>8}{'-':>9}   (no ground truth supplied)")
+
+    @staticmethod
+    def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        f1 = (2 * precision * recall / (precision + recall)
+              if precision + recall else 0.0)
+        return precision, recall, f1
+
+    def report_prf(self) -> None:
+        """Precision, recall and F1 - the standard measures for this task.
+
+        Accuracy answers "how often was the field right". These answer two
+        separate questions that accuracy cannot: when the system commits to a
+        value, how often is it correct (precision), and of the values genuinely
+        present, how many did it find (recall). A system that answers rarely but
+        always correctly and one that answers always but often wrongly can share
+        an accuracy figure while being completely different tools.
+        """
+        print()
+        print(f"  {'FIELD':<12}{'PREC':>9}{'RECALL':>9}{'F1':>9}"
+              f"{'TP':>6}{'FP':>5}{'FN':>5}")
+        for f in FIELD_MAP:
+            pr, rc, f1 = self._prf(self.tp[f], self.fp[f], self.fn[f])
+            print(f"  {f:<12}{pr:>9.1%}{rc:>9.1%}{f1:>9.1%}"
+                  f"{self.tp[f]:>6}{self.fp[f]:>5}{self.fn[f]:>5}")
+
+        tp, fp, fn = (sum(self.tp.values()), sum(self.fp.values()),
+                      sum(self.fn.values()))
+        pr, rc, f1 = self._prf(tp, fp, fn)
+        print(f"  {'MICRO avg':<12}{pr:>9.1%}{rc:>9.1%}{f1:>9.1%}"
+              f"{tp:>6}{fp:>5}{fn:>5}")
+        # Macro treats every field as equally important regardless of how often
+        # it is annotated; micro lets the commoner fields dominate. Both are
+        # reported because they answer different questions about the same runs.
+        macro = [self._prf(self.tp[f], self.fp[f], self.fn[f]) for f in FIELD_MAP]
+        k = len(macro)
+        print(f"  {'MACRO avg':<12}{sum(m[0] for m in macro)/k:>9.1%}"
+              f"{sum(m[1] for m in macro)/k:>9.1%}"
+              f"{sum(m[2] for m in macro)/k:>9.1%}")
 
 
 # --------------------------------------------------------------------------
