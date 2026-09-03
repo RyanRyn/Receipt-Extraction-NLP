@@ -81,8 +81,8 @@ def cmd_process(args) -> int:
             # numbers: "not printed on this receipt" and "not looked for" are
             # different claims and a list of successes cannot separate them.
             from dms.schema import ENTITY_TYPES
-            found_types = {e.type for e in doc.entities if not e.is_absent}
-            absent_types = sorted(e.type for e in doc.entities if e.is_absent)
+            found_types = {e.type for e in doc.entities if e.value is not None}
+            absent_types = sorted(e.type for e in doc.entities if e.value is None)
             print(f"  {'-' * 16}   {len(found_types)} of {len(ENTITY_TYPES)} "
                   "entity types found")
             if absent_types:

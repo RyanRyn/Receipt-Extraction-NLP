@@ -244,7 +244,11 @@ def page_process() -> None:
     # length would claim 16 found. Count the types that produced a value, and
     # show the denominator so the number cannot be read two ways.
     from dms.schema import ENTITY_TYPES
-    found_types = {e.type for e in entities if not e.is_absent}
+    # `e.value is None` rather than the is_absent property: Streamlit reloads
+    # app.py on every rerun but not the modules it imports, so a property
+    # added after the server started would raise AttributeError here while
+    # the page around it worked fine. Testing the field avoids that entirely.
+    found_types = {e.type for e in entities if e.value is not None}
     c1.metric("Entity types found", f"{len(found_types)} of {len(ENTITY_TYPES)}",
               help="Sixteen types are looked for on every receipt. The ones a "
                    "receipt does not carry are still returned, with a null "
