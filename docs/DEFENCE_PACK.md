@@ -170,9 +170,10 @@ Say these without hesitating. Getting a number wrong is worse than not knowing i
 | | |
 |---|---|
 | **Headline accuracy** | **63.6% exact, 77.3% fuzzy** |
+| **F1 (micro)** | **63.9%** — precision 64.2, recall 63.6 |
 | Measured on | **97 receipts**, the unseen `test` split, 4 annotated fields |
-| Rules only | 63.8 / 73.9 |
-| LLM only | 52.2 / 64.9 |
+| Rules only | 63.8 / 73.9 exact/fuzzy · **F1 65.3** |
+| LLM only | 52.2 / 64.9 exact/fuzzy · **F1 52.2** |
 | Train score (for comparison) | 63.3 / 77.7 — gap of **−0.2** |
 | Best field | `total`, 78.4% · `date`, 80.4% |
 | Weakest field | `address`, 36.5% exact (72.9% fuzzy) |
