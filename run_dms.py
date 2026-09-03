@@ -77,15 +77,16 @@ def cmd_process(args) -> int:
             for key, value in doc.fields.items():
                 if value is not None:
                     print(f"  {key:<16}: {value}")
-            # Absent fields are null in the record, not dropped from it, so say
-            # so here as well: "not printed on this receipt" and "not looked
-            # for" are different claims, and a bare list of what was found
-            # cannot distinguish them.
-            absent = [k for k, v in doc.fields.items() if v is None]
-            found = len(doc.fields) - len(absent)
-            print(f"  {'-' * 16}   {found}/{len(doc.fields)} fields found")
-            if absent:
-                print(f"  {'null':<16}: {', '.join(absent)}")
+            # Absent types are returned as null, not dropped, so report both
+            # numbers: "not printed on this receipt" and "not looked for" are
+            # different claims and a list of successes cannot separate them.
+            from dms.schema import ENTITY_TYPES
+            found_types = {e.type for e in doc.entities if not e.is_absent}
+            absent_types = sorted(e.type for e in doc.entities if e.is_absent)
+            print(f"  {'-' * 16}   {len(found_types)} of {len(ENTITY_TYPES)} "
+                  "entity types found")
+            if absent_types:
+                print(f"  {'null':<16}: {', '.join(t.lower() for t in absent_types)}")
             if doc.items:
                 print(f"  {'items':<16}: {len(doc.items)}")
                 for it in doc.items:

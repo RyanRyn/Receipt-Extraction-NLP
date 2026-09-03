@@ -609,5 +609,23 @@ class HybridNER:
             for e in merged if e.type == "ITEM"
         ]
 
+        # Report what was looked for and not found, not only what was found.
+        #
+        # These are produced here rather than when the document is saved so that
+        # every consumer sees the same set: the command line, the interface, a
+        # JSON export and the database cannot disagree about how many types a
+        # receipt carries, because there is one place that decides.
+        #
+        # ITEM is excluded: it repeats, so "no line items" is already said
+        # unambiguously by an empty list and does not need a null standing in
+        # for it.
+        present = {e.type for e in merged}
+        for etype in SCALAR_FIELDS:
+            if etype not in present:
+                merged.append(Entity(type=etype, value=None, text="",
+                                     start=-1, end=-1, confidence=0.0,
+                                     source="absent"))
+
+        # start=-1 sorts last, so what was found comes before what was not.
         merged.sort(key=lambda e: (e.start if e.start >= 0 else 10**9, e.type))
         return merged, fields, items, warnings

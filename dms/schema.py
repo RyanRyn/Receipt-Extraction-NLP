@@ -61,7 +61,10 @@ class Entity:
     """
 
     type: str
-    value: str                    # normalised value ("60.31", "2024-03-14")
+    # Normalised value ("60.31", "2024-03-14"), or None when this type was
+    # looked for and is not on the receipt. None is deliberately distinct from
+    # "": the latter would be an empty value that was nevertheless extracted.
+    value: str | None
     text: str = ""                # surface form exactly as it appears in the OCR
     start: int = -1               # char offset, -1 when it could not be aligned
     end: int = -1
@@ -76,6 +79,11 @@ class Entity:
     @property
     def is_aligned(self) -> bool:
         return self.start >= 0 and self.end > self.start
+
+    @property
+    def is_absent(self) -> bool:
+        """Was this type looked for and found to be missing?"""
+        return self.value is None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

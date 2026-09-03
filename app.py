@@ -240,7 +240,17 @@ def page_process() -> None:
                 ent.meta = dict(ent.meta or {}, bbox=bounding_box(polys))
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Entities found", len(entities))
+    # `entities` now includes the types this receipt does not carry, so a bare
+    # length would claim 16 found. Count the types that produced a value, and
+    # show the denominator so the number cannot be read two ways.
+    from dms.schema import ENTITY_TYPES
+    found_types = {e.type for e in entities if not e.is_absent}
+    c1.metric("Entity types found", f"{len(found_types)} of {len(ENTITY_TYPES)}",
+              help="Sixteen types are looked for on every receipt. The ones a "
+                   "receipt does not carry are still returned, with a null "
+                   "value, so 'not printed here' is distinguishable from "
+                   "'never looked for'. ITEM is the exception: line items "
+                   "repeat, so none is already said by an empty list.")
     c2.metric("Language detected", detect_language(ocr.text))
     c3.metric("Time", f"{t_ner:.1f}s")
 
@@ -453,7 +463,16 @@ def page_database() -> None:
         use_container_width=True, hide_index=True)
 
     st.subheader("Entities by type")
-    st.bar_chart(stats["by_type"])
+    st.caption("Found against recorded absent. A short bar with a long absent "
+               "half — CASHIER — means the type was looked for on every receipt "
+               "and simply is not printed on most of them, which is a different "
+               "claim from the extractor having missed it.")
+    from dms.schema import ENTITY_TYPES
+    absent_counts = stats.get("by_type_absent", {})
+    st.bar_chart(
+        {"found": {t: stats["by_type"].get(t, 0) for t in ENTITY_TYPES},
+         "absent": {t: absent_counts.get(t, 0) for t in ENTITY_TYPES}},
+        stack=True)
 
     with st.expander("How the database is organised"):
         st.markdown(f"""

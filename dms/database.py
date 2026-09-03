@@ -372,40 +372,20 @@ class ReceiptDB:
                    (doc_id, type, value, value_norm, text, start, end,
                     confidence, source, meta_json)
                    VALUES (?,?,?,?,?,?,?,?,?,?)""",
-                (doc_id, ent.type, ent.value, normalize_key(ent.value), ent.text,
-                 ent.start, ent.end, ent.confidence, ent.source,
+                # An absent entity stores NULL in both value columns, so it can
+                # never satisfy an equality or LIKE test and needs no guarding in
+                # the exact and substring stages.
+                (doc_id, ent.type, ent.value,
+                 None if ent.value is None else normalize_key(ent.value),
+                 ent.text, ent.start, ent.end, ent.confidence, ent.source,
                  json.dumps(ent.meta or {}, ensure_ascii=False)),
             )
             new_ids.append(int(cur.lastrowid))
-            if self.has_fts:
+            if self.has_fts and ent.value is not None:
                 cur.execute(
                     "INSERT INTO entities_fts(rowid, value, text) VALUES (?,?,?)",
                     (cur.lastrowid, ent.value, ent.text or ""),
                 )
-        # Every scalar entity type that this receipt did not carry is recorded
-        # too, with a NULL value and source "absent". The document view can then
-        # answer "was PAID looked for on this receipt?" - which a table holding
-        # only successes cannot.
-        #
-        # These rows are deliberately inert everywhere else: NULL never matches
-        # an equality or LIKE test, so the exact and substring stages skip them
-        # for free, and the stages that select by *type* rather than by value -
-        # the place-name fallback, the candidate list, the embedding queue - are
-        # each guarded explicitly. stats() reports them separately so the entity
-        # count still means "entities extracted".
-        from dms.ner import SCALAR_FIELDS
-        present = {e.type for e in doc.entities}
-        for etype in SCALAR_FIELDS:
-            if etype in present:
-                continue
-            cur.execute(
-                """INSERT INTO entities
-                   (doc_id, type, value, value_norm, text, start, end,
-                    confidence, source, meta_json)
-                   VALUES (?,?,NULL,NULL,'',-1,-1,0.0,'absent','{}')""",
-                (doc_id, etype),
-            )
-
         if self.has_fts:
             cur.execute("INSERT INTO documents_fts(rowid, ocr_text) VALUES (?,?)",
                         (doc_id, doc.ocr_text))
@@ -499,6 +479,11 @@ class ReceiptDB:
             "by_type": {r["type"]: r["n"] for r in c(
                 "SELECT type, COUNT(*) n FROM entities WHERE value IS NOT NULL "
                 "GROUP BY type ORDER BY n DESC")},
+            # Found and absent side by side, so a chart can show that a type
+            # with few values was looked for every time rather than ignored.
+            "by_type_absent": {r["type"]: r["n"] for r in c(
+                "SELECT type, COUNT(*) n FROM entities WHERE value IS NULL "
+                "GROUP BY type")},
             "fts": self.has_fts,
             "path": str(self.path),
         }
