@@ -245,11 +245,18 @@ def page_process() -> None:
     c3.metric("Time", f"{t_ner:.1f}s")
 
     st.markdown("**Extracted record**")
-    shown = {k: v for k, v in fields.items() if v is not None}
-    if shown:
-        st.dataframe(
-            [{"Field": k, "Value": str(v)} for k, v in shown.items()],
-            use_container_width=True, hide_index=True)
+    # Every scalar field is shown, including the ones that were not found, with
+    # an explicit null. Hiding them would make "this receipt prints no cashier"
+    # indistinguishable from "cashier was never looked for", and the second
+    # would be a much worse system.
+    absent = [k for k, v in fields.items() if v is None]
+    st.caption(f"**{len(fields) - len(absent)} of {len(fields)}** scalar fields "
+               f"found. The rest are stored as `null`, not dropped — a record "
+               f"that omits what it could not extract is a summary, not a record.")
+    st.dataframe(
+        [{"Field": k, "Value": "—  null" if v is None else str(v),
+          "Found": "" if v is None else "✓"} for k, v in fields.items()],
+        use_container_width=True, hide_index=True)
     if items:
         st.markdown("**Line items**")
         st.dataframe(items, use_container_width=True, hide_index=True)

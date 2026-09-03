@@ -77,6 +77,15 @@ def cmd_process(args) -> int:
             for key, value in doc.fields.items():
                 if value is not None:
                     print(f"  {key:<16}: {value}")
+            # Absent fields are null in the record, not dropped from it, so say
+            # so here as well: "not printed on this receipt" and "not looked
+            # for" are different claims, and a bare list of what was found
+            # cannot distinguish them.
+            absent = [k for k, v in doc.fields.items() if v is None]
+            found = len(doc.fields) - len(absent)
+            print(f"  {'-' * 16}   {found}/{len(doc.fields)} fields found")
+            if absent:
+                print(f"  {'null':<16}: {', '.join(absent)}")
             if doc.items:
                 print(f"  {'items':<16}: {len(doc.items)}")
                 for it in doc.items:

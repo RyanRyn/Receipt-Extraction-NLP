@@ -29,7 +29,7 @@ from dms.lexicon import TAX_INCLUSIVE_MARKERS
 from dms.llm import LocalLLMExtractor
 from dms.rules import extract_rules, line_offsets, looks_like_address
 from dms.textutils import find_money_values
-from dms.schema import MONEY_TYPES, Entity
+from dms.schema import ENTITY_TYPES, MONEY_TYPES, Entity
 from dms.textutils import (
     format_money,
     strip_graphic_noise,
@@ -83,6 +83,22 @@ LLM_KEY_TO_TYPE = {
 }
 
 FIELD_ORDER = list(LLM_KEY_TO_TYPE)
+
+# Every scalar entity type appears in the extracted record, whether or not it was
+# found, with null standing for "looked and it is not on this receipt".
+#
+# A record that silently omits what it could not extract is not a record, it is a
+# summary: a consumer cannot tell "no cashier printed" from "cashier never
+# considered", and the two mean very different things. Deriving the set from
+# ENTITY_TYPES rather than from the LLM's key list also stops the record drifting
+# when a type is added - CASHIER was recognised, stored and searchable, yet
+# missing from every extracted record precisely because it was absent from that
+# list.
+#
+# ITEM is excluded because it repeats rather than being scalar. It has its own
+# `items` list, which is empty rather than null when nothing was found.
+SCALAR_FIELDS = {etype: etype.lower()
+                 for etype in ENTITY_TYPES if etype != "ITEM"}
 
 
 def _agree(etype: str, a: str, b: str) -> bool:
@@ -579,7 +595,7 @@ class HybridNER:
 
         fields = {}
         by_type = {e.type: e for e in merged}
-        for key, etype in LLM_KEY_TO_TYPE.items():
+        for etype, key in SCALAR_FIELDS.items():
             ent = by_type.get(etype)
             fields[key] = ent.value if ent else None
 
