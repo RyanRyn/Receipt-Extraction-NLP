@@ -796,11 +796,21 @@ binding constraint on the task**.
 
 ### 5.5 Extraction model comparison
 
-Nine candidates were tried in total, each unloaded before the next was loaded so
-that an 8 GB card holds exactly one model at a time. Llama-3.2 and Gemma-3 were
-excluded despite fitting: both are gated on HuggingFace and require account
-approval, which would break this project's constraint of running with no account
-and no token.
+**Five models were measured.** Each was unloaded before the next was loaded, so
+that an 8 GB card holds exactly one at a time, and every one saw identical OCR
+text read from the same cache.
+
+Several further candidates were examined and ruled out before any were run, and
+the reasons are worth recording because they are constraints of the project
+rather than of the models:
+
+| Candidate | Why not measured |
+|---|---|
+| Llama-3.2-1B / 3B-Instruct | Gated on HuggingFace: an account and manual approval are required, which breaks this project's constraint of running with no account and no token |
+| Gemma-3-1b / 4b-it | Gated, as above |
+| Phi-4-mini-instruct | 3.84B parameters, ~7.1 GB in float16; will not fit an 8 GB card alongside its activations |
+| Qwen3.5-4B | 4.66B, ~9.3 GB; will not fit |
+| IBM Granite-3.3-2B, SmolLM2-1.7B, Falcon3-1B, LFM2-1.2B | Ungated and small enough. They are registered in `dms/config.py` and can be selected with `--model`, but were **not measured**: the comparison was stopped for time, with roughly 13 GB still to download. Their absence is a gap in this comparison, not a judgement about them |
 
 Sixty training receipts, Tesseract OCR, identical text shown to every model:
 
@@ -811,6 +821,11 @@ Sixty training receipts, Tesseract OCR, identical text shown to every model:
 | Qwen3.5-2B | 2.27B | **54.6%** | 58.8% | 16.8 | 4.1 GB |
 | Qwen3-1.7B | 2.03B | 54.6% | 58.3% | 14.5 | 4.3 GB |
 | Qwen2.5-3B-Instruct | 3.09B | **59.2%** | **61.3%** | **72.6** | 6.8 GB |
+
+Timings and peak memory are from the first, uncached run of each model.
+Generations are cached on disk, so `data/llm_benchmark.json` — regenerated from
+that cache to match this table — records the accuracy figures with zero elapsed
+time. The accuracy is what the cache preserves; the clock is not.
 
 Three findings, and the third is the important one.
 
