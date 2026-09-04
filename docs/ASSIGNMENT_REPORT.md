@@ -1317,9 +1317,25 @@ exercises paths a script never reaches.
    validator rules, which are statements about how receipts arithmetically behave
    rather than parameters fitted to data. They are active during the single test
    run, so their effect is measured on unseen data.
-4. **Sample size.** Headline figures cover the complete 97-receipt test split.
-   The supporting experiments in §5.2, §5.5 and §5.6 remain at 20–30 receipts, so
-   differences of one or two points there are not significant.
+4. **Sample size, and only part of the training data was used.** The headline
+   figure covers the complete 97-receipt test split, but every *decision* behind
+   it was taken on **120 of the 870 available training receipts** — 14% of what
+   the dataset offers. The limit is compute, not principle: one configuration
+   over 120 receipts costs roughly half an hour of language-model generation, and
+   the routing search evaluates four of them, so the full training split would
+   have taken most of a day per experiment.
+
+   This is not a hypothetical weakness. The model comparison (§5.5) used a
+   smaller 60-receipt subset, ranked Qwen3.5-0.8B above the shipped model by
+   0.8 points, and that ranking **reversed** when re-measured over 120. A
+   comparison at 120 could plausibly reverse again at 870. The supporting
+   experiments in §5.2 and §5.6 are smaller still, at 20–30 receipts, and
+   differences of one or two points there should not be read as real.
+
+   The honest position is that the *test* figure is an unbiased estimate of this
+   configuration's performance, while the *choice* of configuration rests on
+   less evidence than it could. Re-running the selection over all 870 training
+   receipts is the single most valuable extension to this work.
 5. **Nonsense queries cannot be rejected by score alone.** Across five embedding
    models, no absolute threshold separates gibberish from genuine queries in
    general.
