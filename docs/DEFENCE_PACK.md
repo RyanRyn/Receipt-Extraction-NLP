@@ -94,7 +94,7 @@ For each field, both give an answer, and then:
 | They disagree | **whoever owns that field wins** | 0.55 |
 | The money doesn't add up | **arithmetic overrules both** | 0.90 |
 
-**"Who owns the field"** is the routing table in `dms/ner.py:54`:
+**"Who owns the field"** is the routing table in `dms/ner.py:55`:
 
 ```python
 PREFER_LLM = {"ADDRESS", "ITEM"}     # judgement fields -> the reader
