@@ -50,8 +50,13 @@ OCR_LINE_TOLERANCE = 0.6
 # --------------------------------------------------------------------------
 # Local LLM  (all free / no API key / no subscription)
 # --------------------------------------------------------------------------
+# Short name -> public HuggingFace repository id. Nothing here is a credential:
+# a repo id is an address, the equivalent of huggingface.co/Qwen/Qwen2.5-1.5B-
+# Instruct, and every model listed is public and ungated. No API key, no token
+# and no account are used anywhere in this project - which is why Llama-3.2 and
+# Gemma-3 were excluded despite being suitable on every other measure.
 LLM_MODELS = {
-    # key                 HuggingFace repo id                         approx size
+    # short name          public repository id                        approx size
     "qwen0.5b":     "Qwen/Qwen2.5-0.5B-Instruct",                    # ~1.0 GB
     "qwen1.5b":     "Qwen/Qwen2.5-1.5B-Instruct",                    # ~3.1 GB  <- default
     "qwen3-1.7b":   "Qwen/Qwen3-1.7B",                               # ~3.4 GB
