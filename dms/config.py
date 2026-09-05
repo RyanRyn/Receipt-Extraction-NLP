@@ -75,6 +75,15 @@ LLM_MODELS = {
     "smollm2-1.7b": "HuggingFaceTB/SmolLM2-1.7B-Instruct",            # ~3.2 GB
     "falcon3-1b":   "tiiuae/Falcon3-1B-Instruct",                     # ~3.1 GB
     "lfm2-1.2b":    "LiquidAI/LFM2-1.2B",                             # ~2.2 GB
+    # Llama, via a community re-upload of Meta's weights.
+    #
+    # meta-llama/Llama-3.2-1B-Instruct is gated: it requires a HuggingFace
+    # account and manual approval, which this project must not depend on. The
+    # unsloth mirror carries the identical weights without that gate. The Llama
+    # Community Licence still governs their use - mirroring removes the access
+    # control, not the licence - and this is academic use, which it permits.
+    "llama3.2-1b":  "unsloth/Llama-3.2-1B-Instruct",                  # ~2.3 GB
+    "llama3.2-3b":  "unsloth/Llama-3.2-3B-Instruct",                  # ~6.0 GB
     # Malaysian-tuned variants (better Bahasa Melayu / Manglish coverage)
     "malaysian1.5b": "mesolitica/Malaysian-Qwen2.5-1.5B-Instruct-v0.1",
     "malaysian3b":   "mesolitica/Malaysian-Qwen2.5-3B-Instruct",

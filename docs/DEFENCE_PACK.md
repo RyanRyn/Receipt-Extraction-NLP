@@ -17,6 +17,11 @@ is the part that still needs work.
 and §5. Practise §6 twice on the actual machine. §7 is what you say when
 something goes wrong.
 
+**For the on-the-spot coding**, keep `CODE_WALKTHROUGH.md` open beside this one.
+It goes file by file — what each does, the two or three functions that matter in
+it, and the question most likely to be asked about it — with verified line
+numbers you can jump straight to.
+
 ---
 
 ## 1. The 90-second answer
